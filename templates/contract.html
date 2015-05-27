@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>{{contract.details.title}}</h1>
+
+<table class="ui definition celled table">
+  <tr>
+    <td>Reference number:</td><td>{{contract.ref_no|d('N/A', True)}}</td>
+  </tr>
+  <tr>
+    <td>Estimated length of contract:</td><td>{{contract.length|d('N/A', True)}} Months</td>
+  </tr>
+  <tr>
+    <td>Name of the buying organisation:</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
+  </tr>
+</table>
+
+<h2>Description of the contract</h2>
+<p>{{contract.details.description|d('No description was provided', True)}}</p>
+
+<h2>Documents</h2>
+<div class="ui list">
+    {% for doc in contract.documents %}
+    <a class="item" href="{{url_for('download', notice_id=contract.id, file_id=doc.file_id)}}">
+      <i class="file outline icon"></i>
+      <div class="content">
+        <div class="header">{{doc.title}}</div>
+        <div class="description">({{doc.filename}})</div>
+      </div>
+    </a>
+    {% endfor %}
+</div>
+
+<h2>Who to contact</h2>
+<div class="ui list">
+  <a class="item" href="mailto:tom@example.com">
+    <i class="at icon"></i>
+    <div class="content">
+      tom@example.com
+    </div>
+  </a>
+</div>
+{% endblock %}

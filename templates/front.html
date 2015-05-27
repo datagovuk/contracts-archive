@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block body %}
+<div >Search</h1>
+
+<form action="/search/">
+  <div class="ui action left icon input">
+    <i class="search icon"></i>
+    <input name="q" type="text" placeholder="Enter keywords here">
+    <button class="ui teal button">Search</button>
+  </div>
+</form>
+
+<h2>WELCOME TO CONTRACTS FINDER</h2>
+<div class="ui inverted segment">
+  <p>This site is now a read-only site.</p>
+</div>
+<p>Please click on the link below and you will be re-directed to the new Contracts Finder website. If you have any problems with this link please email: <a href="mailto:CF.Support@ipl.com">CF.Support@ipl.com<a/></p>
+
+<p><a href="https://www.gov.uk/contracts-finder">https://www.gov.uk/contracts-finder</a></p>
+
+<h2>Popular Searches</h2>
+
+<div class="ui horizontal list massive">
+    <a class="item" href="{{url_for('search')}}?q=construction">
+      <i class="black building outline icon"></i>
+      <div class="content">
+        Construction
+      </div>
+    </a>
+    <a class="item" href="{{url_for('contracts')}}">
+        <i class="black star outline icon"></i>
+        <div class="content">
+          All Contracts
+        </div>
+    </a>
+    <a class="item" href="{{url_for('search')}}?q=cleaning">
+      <i class="black home icon"></i>
+      <div class="content">
+        Cleaning
+      </div>
+    </a>
+    <a class="item" href="{{url_for('search')}}?q=security">
+      <i class="black lock icon"></i>
+      <div class="content">
+        Security
+      </div>
+    </a>
+    <a class="item" href="{{url_for('search')}}?q=research">
+      <i class="black lab icon"></i>
+      <div class="content">
+        Research
+      </div>
+    </a>
+    <a class="item" href="{{url_for('search')}}?q=training">
+      <i class="black student icon"></i>
+      <div class="content">
+        Training
+      </div>
+    </a>
+</div>
+{% endblock %}
