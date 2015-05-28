@@ -1,6 +1,7 @@
 from flask import Flask, abort, send_from_directory, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
+import pyes
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
@@ -46,8 +47,14 @@ def contract(notice_id):
 
 @app.route('/search/')
 def search():
+    contracts = []
+    
     query = request.args.get('q')
-    contracts = Notice.query.all()
+    if query:
+        es = pyes.ES('127.0.0.1:9200')
+        q = pyes.query.QueryStringQuery(query)
+        for notice in es.search(q):
+            contracts.append(Notice.query.get(notice['id']))
     return render_template('contracts.html',
                            contracts=contracts,
                            query=query)
