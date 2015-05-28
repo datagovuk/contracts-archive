@@ -18,6 +18,7 @@ class NoticeDetail(db.Model):
     title = db.Column(db.Text)
     description = db.Column(db.Text)
     buying_org = db.Column(db.Text)
+    language_id = db.Column(db.Integer)
 
 class NoticeDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)
