@@ -16,6 +16,13 @@
       </div>
     </a>
     <div class="container">
+      {% if errors %}
+      <div class="ui red inverted segment">
+        {% for error in errors %}
+          {{error}}
+        {% endfor %}
+      </div>
+      {% endif %}
   {% block body %}{% endblock %}
     </div>
   </body>

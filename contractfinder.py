@@ -47,17 +47,24 @@ def contract(notice_id):
 
 @app.route('/search/')
 def search():
+    errors = []
     contracts = []
     
     query = request.args.get('q')
+
     if query:
-        es = pyes.ES('127.0.0.1:9200')
-        q = pyes.query.QueryStringQuery(query)
-        for notice in es.search(q):
-            contracts.append(Notice.query.get(notice['id']))
+        try:
+            es = pyes.ES('127.0.0.1:9200')
+            q = pyes.query.QueryStringQuery(query)
+            for notice in es.search(q):
+                contracts.append(Notice.query.get(notice['id']))
+        except pyes.exceptions.NoServerAvailable:
+            errors.append("Server Error: Unable to perform search")
+
     return render_template('contracts.html',
                            contracts=contracts,
-                           query=query)
+                           query=query,
+                           errors=errors)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):
