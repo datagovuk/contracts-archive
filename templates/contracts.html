@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% if query is not none %}
+{% if query is defined %}
   <h1>Search Results</h1>
   <p><strong>You Searched for:</strong> "{{query}}"</p>
   {% if total == 1 %}
