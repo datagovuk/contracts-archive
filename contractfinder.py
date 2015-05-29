@@ -61,7 +61,7 @@ class SearchPaginator(object):
 
         if self.total_records:
             self.total_pages = self.total_records / 20
-            if self.total_pages % 20:
+            if self.total_records % 20:
                 self.total_pages += 1
 
     @property
