@@ -1,4 +1,4 @@
-from flask import Flask, abort, send_from_directory, render_template, request
+from flask import Flask, abort, send_from_directory, render_template, request, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import pyes
@@ -11,11 +11,16 @@ class Notice(db.Model):
     ref_no = db.Column(db.Text)
     length = db.Column(db.Integer)
 
+    @property
+    def details(self):
+        # Quick fix - show details of first language (usually English)
+        return self.all_details.order_by('language_id').first()
+
 class NoticeDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
     notice = db.relationship('Notice',
-                    backref=db.backref('details', uselist=False))
+                    backref=db.backref('all_details', lazy='dynamic'))
     title = db.Column(db.Text)
     description = db.Column(db.Text)
     buying_org = db.Column(db.Text)
