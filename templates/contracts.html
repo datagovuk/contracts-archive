@@ -3,11 +3,10 @@
 {% if query %}
   <h1>Search Results</h1>
   <p><strong>You Searched for:</strong> {{query}}</p>
-  {% set count = contracts|length %}
-  {% if count == 1 %}
+  {% if total == 1 %}
   <p>We found 1 result</p>
   {% else %}
-  <p>We found {{count}} results</p>
+  <p>We found {{total}} results</p>
   {% endif %}
 {% else %}
   <h1>All Contracts</h1>
@@ -33,7 +32,7 @@
 </table>
 
 <div class="ui segment">
-  <div id="pagenumber">Page {{page}} of {{total}}</div>
+  <div id="pagenumber">Page {{page}} of {{total_pages}}</div>
   <div class="ui pagination menu">
     {% if prevlink %}
     <a class="icon item" href="{{prevlink}}">

@@ -36,6 +36,51 @@ class NoticeDocument(db.Model):
     filename = db.Column(db.Text)
     title = db.Column(db.Text)
 
+class SearchPaginator(object):
+    def __init__(self, query, page):
+        self.errors = []
+        self.contracts = []
+        self.total_records = 0
+        self.total_pages = 0
+        self.page = page
+
+        try:
+            es = pyes.ES('127.0.0.1:9200')
+            q = pyes.query.QueryStringQuery(query)
+            search_result = es.search(q, size=20, start=page-1)
+
+            self.total_records = search_result.total
+
+            for notice in search_result:
+                self.contracts.append(Notice.query.get(notice['id']))
+        except pyes.exceptions.NoServerAvailable:
+            self.errors.append("Server Error: Unable to perform search")
+
+        if self.total_records:
+            self.total_pages = self.total_records / 20
+            if self.total_pages % 20:
+                self.total_pages += 1
+
+    @property
+    def has_prev(self):
+        return self.page > 1
+
+    @property
+    def has_next(self):
+        return self.page < self.total_pages
+
+    @property
+    def items(self):
+        return self.contracts
+
+    @property
+    def pages(self):
+        return self.total_pages
+
+    @property
+    def total(self):
+        return self.total_records
+
 @app.route('/')
 def front_page():
     return render_template('front.html')
@@ -58,7 +103,7 @@ def contracts():
                            prevlink=prevlink,
                            nextlink=nextlink,
                            page=page,
-                           total=pagination.pages)
+                           total_pages=pagination.pages)
 
 @app.route('/contract/<int:notice_id>/')
 def contract(notice_id):
@@ -67,24 +112,28 @@ def contract(notice_id):
 
 @app.route('/search/')
 def search():
-    errors = []
-    contracts = []
-    
-    query = request.args.get('q')
+    query = request.args.get('q', '')
+    page = request.args.get('page', 1, type=int)
 
-    if query:
-        try:
-            es = pyes.ES('127.0.0.1:9200')
-            q = pyes.query.QueryStringQuery(query)
-            for notice in es.search(q):
-                contracts.append(Notice.query.get(notice['id']))
-        except pyes.exceptions.NoServerAvailable:
-            errors.append("Server Error: Unable to perform search")
+    pagination = SearchPaginator(query, page)
+
+    prevlink = None
+    if pagination.has_prev:
+        prevlink = url_for('search', page=page-1, q=query, _external=True)
+
+    nextlink = None
+    if pagination.has_next:
+        nextlink = url_for('search', page=page+1, q=query, _external=True)
 
     return render_template('contracts.html',
-                           contracts=contracts,
+                           contracts=pagination.items,
                            query=query,
-                           errors=errors)
+                           prevlink=prevlink,
+                           nextlink=nextlink,
+                           page=page,
+                           total_pages=pagination.pages,
+                           total=pagination.total,
+                           errors=pagination.errors)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):
