@@ -21,7 +21,7 @@
     <tr>
       <td>
         <a href="{{url_for('contract', notice_id=contract.id)}}">{{contract.details.title}}</a>
-        <p>{{contract.details.description|d('No description was provided', True)}}</p>
+        <p>{{contract.details.description|d('No description was provided', True)|safe}}</p>
       </td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
