@@ -4,4 +4,9 @@ Jinja2==2.7.3
 MarkupSafe==0.23
 SQLAlchemy==1.0.4
 Werkzeug==0.10.4
+argparse==1.2.1
 itsdangerous==0.24
+pyes==0.99.5
+six==1.9.0
+urllib3==1.10.4
+wsgiref==0.1.2
