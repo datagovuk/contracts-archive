@@ -33,13 +33,21 @@
 </table>
 
 <div class="ui segment">
-  <div id="pagenumber">Page X of Y</div>
+  <div id="pagenumber">Page {{page}} of {{total}}</div>
   <div class="ui pagination menu">
-    <a class="icon item {% if not prevlink %}disabled{% endif %}">
+    {% if prevlink %}
+    <a class="icon item" href="{{prevlink}}">
+    {% else %}
+    <a class="icon item disabled">
+    {% endif %}
       <i class="left arrow icon"></i>
       Previous
     </a>
-    <a class="icon item {% if not nextlink %}disabled{% endif %}">
+    {% if nextlink %}
+    <a class="icon item" href="{{nextlink}}">
+    {% else %}
+    <a class="icon item disabled">
+    {% endif %}
       Next
       <i class="right arrow icon"></i>
     </a>

@@ -42,8 +42,23 @@ def front_page():
 
 @app.route('/contracts/')
 def contracts():
-    contracts = Notice.query.all()
-    return render_template('contracts.html', contracts=contracts)
+    page = request.args.get('page', 1, type=int)
+    pagination = Notice.query.paginate(page, 20, error_out=False)
+
+    prevlink = None
+    if pagination.has_prev:
+        prevlink = url_for('contracts', page=page-1, _external=True)
+
+    nextlink = None
+    if pagination.has_next:
+        nextlink = url_for('contracts', page=page+1, _external=True)
+
+    return render_template('contracts.html',
+                           contracts=pagination.items,
+                           prevlink=prevlink,
+                           nextlink=nextlink,
+                           page=page,
+                           total=pagination.pages)
 
 @app.route('/contract/<int:notice_id>/')
 def contract(notice_id):
