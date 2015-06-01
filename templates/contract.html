@@ -4,18 +4,24 @@
 
 <table class="ui definition celled table">
   <tr>
-    <td>Reference number:</td><td>{{contract.ref_no|d('N/A', True)}}</td>
+    <td>Created on</td><td>{{contract.date_created.strftime('%d/%m/%Y')}}</td>
   </tr>
   <tr>
-    <td>Estimated length of contract:</td><td>{{contract.length|d('N/A', True)}} Months</td>
+    <td>Reference number</td><td>{{contract.ref_no|d('N/A', True)}}</td>
+  </tr>
+  <tr>
+    <td>Estimated length of contract</td><td>{{contract.length|d('N/A', True)}} Months</td>
+  </tr>
+  <tr>
+    <td>Estimated value</td><td>{{contract.min_value|currency}} - {{contract.max_value|currency}} </td>
   </tr>
   {% if contract.location.name %}
   <tr>
-    <td>Location where the contract is to be carried out: </td><td>{{contract.location.name}}<br>{{contract.details.location_text}}</td>
+    <td>Location where the contract is to be carried out</td><td>{{contract.location.name}}<br>{{contract.details.location_text}}</td>
   </tr>
   {% endif %}
   <tr>
-    <td>Name of the buying organisation:</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
+    <td>Name of the buying organisation</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
   </tr>
 </table>
 
@@ -45,6 +51,14 @@
   <tr>
     <td>Is it a framework agreement?</td><td>{% if contract.is_framework %}Yes{% else %}No{% endif%}</td>
   </tr>
+{% if contract.date_awarded %}
+  <tr>
+    <td>Awarded on</td><td>{{contract.date_awarded.strftime('%d/%m/%Y')}}</td>
+  </tr>
+  <tr>
+    <td>Awarded value</td><td>{{contract.max_value|currency}}</td>
+  </tr>
+{% endif %}
 </table>
 
 {% if contract.details.contact_email %}

@@ -1,4 +1,4 @@
-from flask import Flask, abort, send_from_directory, render_template, request, url_for
+from flask import Flask, abort, send_from_directory, render_template, request, url_for, Markup
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import pyes
@@ -14,6 +14,10 @@ class Notice(db.Model):
     location = db.relationship('Region',
                     backref=db.backref('all_notices', lazy='dynamic'))
     is_framework = db.Column(db.Integer)
+    date_awarded = db.Column(db.DateTime)
+    date_created = db.Column(db.DateTime)
+    min_value = db.Column(db.Integer)
+    max_value = db.Column(db.Integer)
 
     @property
     def details(self):
@@ -166,6 +170,10 @@ def download(notice_id, file_id):
                                mimetype=mimetype,
                                as_attachment=True,
                                attachment_filename=filename)
+
+@app.template_filter('currency')
+def currency(s):
+    return Markup('&pound;{:,.2f}'.format(s).replace('.00', ''))
 
 if __name__ == '__main__':
     app.debug = True
