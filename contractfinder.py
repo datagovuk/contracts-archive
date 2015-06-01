@@ -10,6 +10,9 @@ class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ref_no = db.Column(db.Text)
     length = db.Column(db.Integer)
+    location_code = db.Column(db.Text, db.ForeignKey('region.code'))
+    location = db.relationship('Region',
+                    backref=db.backref('all_notices', lazy='dynamic'))
 
     @property
     def details(self):
@@ -35,6 +38,12 @@ class NoticeDocument(db.Model):
     file_id = db.Column(db.String(36))
     filename = db.Column(db.Text)
     title = db.Column(db.Text)
+
+class Region(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    code = db.Column(db.Text)
+    parent_id = db.Column(db.Integer)
 
 class SearchPaginator(object):
     def __init__(self, query, page):
