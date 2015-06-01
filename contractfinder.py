@@ -13,6 +13,7 @@ class Notice(db.Model):
     location_code = db.Column(db.Text, db.ForeignKey('region.code'))
     location = db.relationship('Region',
                     backref=db.backref('all_notices', lazy='dynamic'))
+    is_framework = db.Column(db.Integer)
 
     @property
     def details(self):
@@ -28,6 +29,9 @@ class NoticeDetail(db.Model):
     description = db.Column(db.Text)
     buying_org = db.Column(db.Text)
     language_id = db.Column(db.Integer)
+    contact_email = db.Column(db.Text)
+    location_text = db.Column(db.Text)
+    supplier_instructions = db.Column(db.Text)
 
 class NoticeDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)

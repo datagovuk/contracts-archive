@@ -9,6 +9,11 @@
   <tr>
     <td>Estimated length of contract:</td><td>{{contract.length|d('N/A', True)}} Months</td>
   </tr>
+  {% if contract.location.name %}
+  <tr>
+    <td>Location where the contract is to be carried out: </td><td>{{contract.location.name}}<br>{{contract.details.location_text}}</td>
+  </tr>
+  {% endif %}
   <tr>
     <td>Name of the buying organisation:</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
   </tr>
@@ -17,6 +22,7 @@
 <h2>Description of the contract</h2>
 <p>{{contract.details.description|d('No description was provided', True)|safe}}</p>
 
+{% if contract.documents.count() > 0 %}
 <h2>Documents</h2>
 <div class="ui list">
     {% for doc in contract.documents %}
@@ -29,14 +35,27 @@
     </a>
     {% endfor %}
 </div>
+{% endif %}
 
+<h2>Additional information</h2>
+<table class="ui definition celled table">
+  <tr>
+    <td>Additional Notes</td><td>{{contract.details.supplier_instructions|d('N/A', True)}}</td>
+  </tr>
+  <tr>
+    <td>Is it a framework agreement?</td><td>{% if contract.is_framework %}Yes{% else %}No{% endif%}</td>
+  </tr>
+</table>
+
+{% if contract.details.contact_email %}
 <h2>Who to contact</h2>
 <div class="ui list">
   <a class="item" href="mailto:tom@example.com">
     <i class="at icon"></i>
     <div class="content">
-      tom@example.com
+      {{contract.details.contact_email}}
     </div>
   </a>
 </div>
+{% endif %}
 {% endblock %}
