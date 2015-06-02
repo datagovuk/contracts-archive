@@ -40,6 +40,12 @@ class NoticeDetail(db.Model):
     location_text = db.Column(db.Text)
     supplier_instructions = db.Column(db.Text)
     deadline_for = db.Column(db.Text)
+    contact_web = db.Column(db.Text)
+    contact_fax = db.Column(db.Text)
+    contact_name = db.Column(db.Text)
+    contact_tel = db.Column(db.Text)
+    contact_extension = db.Column(db.Text)
+    contact_address = db.Column(db.Text)
 
 class NoticeDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)

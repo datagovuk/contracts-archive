@@ -88,15 +88,63 @@
 {% endif %}
 </table>
 
-{% if contract.details.contact_email %}
 <h2>Who to contact</h2>
-<div class="ui list">
-  <a class="item" href="mailto:tom@example.com">
-    <i class="at icon"></i>
-    <div class="content">
-      {{contract.details.contact_email}}
-    </div>
-  </a>
-</div>
+<table class="ui definition celled table">
+{% if contract.details.contact_name %}
+  <tr>
+    <td>Contact name</td>
+    <td>
+      {{contract.details.contact_name}}
+    </td>
+  </tr>
 {% endif %}
+
+{% if contract.details.contact_email %}
+  <tr>
+    <td>Email</td>
+    <td>
+      <a href="mailto:{{contract.details.contact_email}}">{{contract.details.contact_email}}</a>
+    </td>
+  </tr>
+{% endif %}
+
+{% if contract.details.contact_address %}
+  <tr>
+    <td>Address</td>
+    <td>
+      {{contract.details.contact_address}}
+    </td>
+  </tr>
+{% endif %}
+
+{% if contract.details.contact_tel %}
+  <tr>
+    <td>Telephone</td>
+    <td>
+      {{contract.details.contact_tel}} 
+      {% if contract.details.contact_extension %}
+      (extension: {{contract.details.contact_extension}})
+      {% endif %}
+    </td>
+  </tr>
+{% endif %}
+
+{% if contract.details.contact_fax %}
+  <tr>
+    <td>Fax</td>
+    <td>
+      {{contract.details.contact_fax}}
+    </td>
+  </tr>
+{% endif %}
+
+{% if contract.details.contact_web %}
+  <tr>
+    <td>Web address</td>
+    <td>
+      <a href="{{contract.details.contact_web}}">{{contract.details.contact_web}}</a>
+    </td>
+  </tr>
+{% endif %}
+</table>
 {% endblock %}
