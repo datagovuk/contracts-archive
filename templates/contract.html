@@ -9,17 +9,44 @@
   <tr>
     <td>Reference number</td><td>{{contract.ref_no|d('N/A', True)}}</td>
   </tr>
+
+  {% if contract.deadline_date %}
+  <tr>
+    <td>Deadline date</td><td>{{contract.deadline_date.strftime('%d/%m/%Y')}}</td>
+  </tr>
+  {% endif %}
+
+  {% if contract.details.deadline_for %}
+  <tr>
+    <td>This deadline is for...</td><td>{{contract.details.deadline_for}}</td>
+  </tr>
+  {% endif %}
+
   <tr>
     <td>Estimated length of contract</td><td>{{contract.length|d('N/A', True)}} Months</td>
   </tr>
   <tr>
     <td>Estimated value</td><td>{{contract.min_value|currency}} - {{contract.max_value|currency}} </td>
   </tr>
+
   {% if contract.location.name %}
   <tr>
     <td>Location where the contract is to be carried out</td><td>{{contract.location.name}}<br>{{contract.details.location_text}}</td>
   </tr>
   {% endif %}
+
+  {% if contract.is_sme_friendly %}
+  <tr>
+    <td>Is this suitable for smaller suppliers?</td><td>Yes</td>
+  </tr>
+  {% endif %}
+
+  {% if contract.is_voluntary_friendly %}
+  <tr>
+    <td>Is this contract suitable for a voluntary, community and social enterprise organisations?</td><td>Yes</td>
+  </tr>
+  {% endif %}
+
   <tr>
     <td>Name of the buying organisation</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
   </tr>

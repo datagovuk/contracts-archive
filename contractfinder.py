@@ -14,8 +14,11 @@ class Notice(db.Model):
     location = db.relationship('Region',
                     backref=db.backref('all_notices', lazy='dynamic'))
     is_framework = db.Column(db.Integer)
+    is_sme_friendly = db.Column(db.Integer)
+    is_voluntary_friendly = db.Column(db.Integer)
     date_awarded = db.Column(db.DateTime)
     date_created = db.Column(db.DateTime)
+    deadline_date = db.Column(db.DateTime)
     min_value = db.Column(db.Integer)
     max_value = db.Column(db.Integer)
 
@@ -36,6 +39,7 @@ class NoticeDetail(db.Model):
     contact_email = db.Column(db.Text)
     location_text = db.Column(db.Text)
     supplier_instructions = db.Column(db.Text)
+    deadline_for = db.Column(db.Text)
 
 class NoticeDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)
