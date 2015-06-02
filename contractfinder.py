@@ -1,7 +1,10 @@
-from flask import Flask, abort, send_from_directory, render_template, request, url_for, Markup
+from flask import (Flask, abort, send_from_directory,
+                   render_template, request, url_for,
+                   Markup, redirect)
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import pyes
+import urlparse
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
@@ -184,6 +187,18 @@ def download(notice_id, file_id):
 @app.template_filter('currency')
 def currency(s):
     return Markup('&pound;{:,.2f}'.format(s).replace('.00', ''))
+
+@app.template_filter('external_link')
+def external_link(s):
+    """
+    If the link has no protocol add http://
+
+    If the link is an email address add mailto:
+    """
+    if '@' in s:
+        return 'mailto:%s' % s
+    else:
+        return urlparse.urljoin('http://', s)
 
 if __name__ == '__main__':
     app.debug = True
