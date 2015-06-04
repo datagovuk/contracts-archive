@@ -66,6 +66,20 @@ class Region(db.Model):
     code = db.Column(db.Text)
     parent_id = db.Column(db.Integer)
 
+class Award(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
+    notice = db.relationship('Notice',
+                    backref=db.backref('award', uselist=False))
+
+class AwardDetail(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    award_id = db.Column(db.Integer, db.ForeignKey('award.id'))
+    award = db.relationship('Award',
+                    backref=db.backref('details', uselist=False))
+    business_name = db.Column(db.Text)
+    business_address = db.Column(db.Text)
+
 class SearchPaginator(object):
     def __init__(self, query, page):
         self.errors = []
