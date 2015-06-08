@@ -24,6 +24,7 @@ class Notice(db.Model):
     deadline_date = db.Column(db.DateTime)
     min_value = db.Column(db.Integer)
     max_value = db.Column(db.Integer)
+    status = db.Column(db.Integer)
 
     @property
     def details(self):

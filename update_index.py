@@ -5,6 +5,7 @@ import pyes
 es = pyes.ES('127.0.0.1:9200')
 
 try:
+    es.indices.delete_index('main-index')
     es.indices.create_index('main-index')
 except:
     pass

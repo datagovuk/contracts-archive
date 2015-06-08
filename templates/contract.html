@@ -2,6 +2,55 @@
 {% block body %}
 <h1>{{contract.details.title}}</h1>
 
+{% if contract.status == 0 %} {# Archived contract e.g. 414447 #}
+<div class="ui info icon message">
+  <i class="info icon big"></i>
+  <div class="content">
+    <div class="header">
+      The buying process is complete
+    </div>
+    <p>The buyer is publishing the contract documentation to meet the government transparency commitments.</p>
+  </div>
+</div>
+{% endif %}
+
+{% if contract.status == 5 %} {# Replaced contract e.g. 720122 #}
+<div class="ui info icon message">
+  <i class="info icon big"></i>
+  <div class="content">
+    <div class="header">
+      This notice has been replaced
+    </div>
+    <p>Please see the related notices for the replacement notice.</p>
+    <p>Reason: </p>
+  </div>
+</div>
+{% endif %}
+
+{% if contract.status == 6 %} {# Replaced contract e.g. 684496 #}
+<div class="ui info icon message">
+  <i class="info icon big"></i>
+  <div class="content">
+    <div class="header">
+      This notice has been withdrawn
+    </div>
+    <p>Reason: </p>
+  </div>
+</div>
+{% endif %}
+
+{% if contract.status == 7 %} {# Replaced contract e.g. 1704046 #}
+<div class="ui info icon message">
+  <i class="info icon big"></i>
+  <div class="content">
+    <div class="header">
+      This notice is pending replacement
+    </div>
+    <p>Reason: </p>
+  </div>
+</div>
+{% endif %}
+
 <table class="ui definition celled table">
   <tr>
     <td>Created on</td><td>{{contract.date_created.strftime('%d/%m/%Y')}}</td>
