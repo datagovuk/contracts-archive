@@ -23,9 +23,17 @@
         <a href="{{url_for('contract', notice_id=contract.id)}}">{{contract.details.title}}</a>
         <p>{{contract.details.description|d('No description was provided', True)|safe}}</p>
       </td>
-      <td>{{contract.location.name}}</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+      <td style="text-align:center">{{contract.location.name}}</td>
+      <td style="text-align:center">
+      {{contract.min_value|currency}}
+      {% if contract.min_value != contract.max_value %}
+      <br/>
+      <i class="icon chevron down"></i>
+      <br/>
+      {{contract.max_value|currency}}
+      {% endif %}
+      </td>
+      <td style="text-align:center">{{contract.type}}</td>
     </tr>
     {% endfor %}
     </tbody>

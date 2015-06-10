@@ -25,11 +25,19 @@ class Notice(db.Model):
     min_value = db.Column(db.Integer)
     max_value = db.Column(db.Integer)
     status = db.Column(db.Integer)
+    type_id = db.Column(db.Integer)
 
     @property
     def details(self):
         # Quick fix - show details of first language (usually English)
         return self.all_details.order_by('language_id').first()
+    @property
+    def type(self):
+        if self.type_id == 33:
+            return 'Pipeline'
+        else:
+            return 'Tender or contract'
+    
 
 class NoticeDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
