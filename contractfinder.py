@@ -2,10 +2,12 @@ from flask import (Flask, abort, send_from_directory,
                    render_template, request, url_for,
                    Markup, redirect)
 from flask.ext.sqlalchemy import SQLAlchemy
+from reverse_proxied import ReverseProxied
 import os
 import pyes
 import urlparse
 app = Flask(__name__)
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 
