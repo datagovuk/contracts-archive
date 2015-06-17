@@ -6,15 +6,6 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
   </head>
   <body>
-    <a href="{{ url_for('front_page') }}">
-      <div class="ui header" id="main-header">
-        <i class="search icon"></i>
-        <div class="content">
-          Contracts
-          <div class="sub header">Archive</div>
-        </div>
-      </div>
-    </a>
     <div class="container">
       {% if errors %}
       <div class="ui red inverted segment">
