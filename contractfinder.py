@@ -209,9 +209,18 @@ def download(notice_id, file_id):
                                as_attachment=True,
                                attachment_filename=filename)
 
+@app.route('/data-feeds/')
+def data_feeds():
+    return render_template('data-feeds.html')
+
 @app.template_filter('currency')
 def currency(s):
     return Markup('&pound;{:,.2f}'.format(s).replace('.00', ''))
+
+@app.template_filter('month')
+def month(i):
+    import calendar
+    return calendar.month_abbr[i]
 
 @app.template_filter('external_link')
 def external_link(s):
