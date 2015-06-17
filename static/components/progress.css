@@ -174,7 +174,7 @@
 ---------------*/
 
 .ui.progress.success .bar {
-  background-color: #5bbd72 !important;
+  background-color: #8bc658 !important;
 }
 .ui.progress.success .bar,
 .ui.progress.success .bar::after {
@@ -296,7 +296,7 @@
   color: #ffffff;
 }
 .ui.inverted.progress.success > .label {
-  color: #5bbd72;
+  color: #8bc658;
 }
 .ui.inverted.progress.warning > .label {
   color: #f2c037;
@@ -365,7 +365,7 @@
   background-color: #3b83c0;
 }
 .ui.green.progress .bar {
-  background-color: #5bbd72;
+  background-color: #8bc658;
 }
 .ui.orange.progress .bar {
   background-color: #e07b53;

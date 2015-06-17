@@ -558,7 +558,7 @@
   border-top: 0.2em solid #3b83c0;
 }
 .ui.green.table {
-  border-top: 0.2em solid #5bbd72;
+  border-top: 0.2em solid #8bc658;
 }
 .ui.orange.table {
   border-top: 0.2em solid #e07b53;
@@ -593,7 +593,7 @@
   color: #ffffff !important;
 }
 .ui.inverted.green.table {
-  background-color: #5bbd72 !important;
+  background-color: #8bc658 !important;
   color: #ffffff !important;
 }
 .ui.inverted.orange.table {
