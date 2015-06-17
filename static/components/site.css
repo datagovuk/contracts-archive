@@ -104,10 +104,11 @@ p:last-child {
 
 a {
   color: #669900;
-  text-decoration: true;
+  text-decoration: none;
 }
 a:hover {
   color: #447700;
+  text-decoration: underline;
 }
 
 
