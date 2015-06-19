@@ -3,7 +3,7 @@
 <h1>{{contract.details.title}}</h1>
 
 {% if contract.status == 0 %} {# Archived contract e.g. 414447 #}
-<div class="ui info icon message">
+<div class="ui success icon message">
   <i class="info icon big"></i>
   <div class="content">
     <div class="header">
@@ -15,7 +15,7 @@
 {% endif %}
 
 {% if contract.status == 5 %} {# Replaced contract e.g. 720122 #}
-<div class="ui info icon message">
+<div class="ui success icon message">
   <i class="info icon big"></i>
   <div class="content">
     <div class="header">
@@ -28,7 +28,7 @@
 {% endif %}
 
 {% if contract.status == 6 %} {# Replaced contract e.g. 684496 #}
-<div class="ui info icon message">
+<div class="ui success icon message">
   <i class="info icon big"></i>
   <div class="content">
     <div class="header">
@@ -40,7 +40,7 @@
 {% endif %}
 
 {% if contract.status == 7 %} {# Replaced contract e.g. 1704046 #}
-<div class="ui info icon message">
+<div class="ui success icon message">
   <i class="info icon big"></i>
   <div class="content">
     <div class="header">
