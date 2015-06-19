@@ -1,8 +1,11 @@
-.container {
+#contracts-container {
   background: white;
   padding: 20px;
 }
-
 #pagenumber {
     margin-bottom: 10px;
+}
+
+a.item:hover {
+    text-decoration: none;
 }

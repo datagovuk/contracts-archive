@@ -6,7 +6,7 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
   </head>
   <body>
-    <div class="container">
+    <div id="contracts-container">
       {% if errors %}
       <div class="ui red inverted segment">
         {% for error in errors %}
