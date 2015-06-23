@@ -1,8 +1,50 @@
 {% extends "layout.html" %}
 {% block body %}
-<h2>Detailed reports - older notices</h2>
-<p>Each month a snapshot is taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
+<div class="ui segment">
+<h3>Activity summary and buyer group list</h3>
+
+<p>You can download three reports. The first provides a high-level view of procurement activity for all government departments and agencies that have published notices. It shows the total number of tender document summaries, contract document summaries and live opportunities published so far by each organisation.</p>
+
+<p>The second is a list of buyer groups registered on Contracts Finder is also available.</p>
+
+<p>Thirdly, a list of the pipelines that government is currently aware of that could result in contract opportunities.</p>
+
 <div class="ui list">
+  <a class="item" href="{{url_for('static', filename='files/Summary_of_activity_by_department.csv')}}">
+    <i class="icon file excel outline"></i>
+    <div class="content">Summary of activity by department</div>
+  </a>
+  <a class="item" href="{{url_for('static', filename='files/List_of_buying_organisations.csv')}}">
+    <i class="icon file excel outline"></i>
+    <div class="content">List of buying organisations</div>
+  </a>
+  <a class="item" href="{{url_for('static', filename='files/List_of_current_pipelines.csv')}}">
+    <i class="icon file excel outline"></i>
+    <div class="content">List of current pipelines</div>
+  </a>
+</div>
+</div>
+<div class="ui segment">
+<h3>Detailed reports - recent notices</h3>
+
+<div class="ui list">
+  <a class="item" href="{{url_for('static', filename='files/notices.xml')}}">
+    <i class="icon file code outline"></i>
+    <div class="content">Detailed report - recent notices (XML)</div>
+  </a>
+  <a class="item" href="{{url_for('static', filename='files/notices.csv')}}">
+    <i class="icon file excel outline"></i>
+    <div class="content">Detailed report - recent notices (CSV)</div>
+  </a>
+</div>
+</div>
+
+<div class="ui segment">
+<h3>Detailed reports - older notices</h3>
+<p>Each month a snapshot is taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
+<div class="ui celled list">
+  <div class="item">2015
+    <div class="ui list">
   {% set year=2015 %}
   {% set month=01 %}
   {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
@@ -17,8 +59,12 @@
     <div class="content">{{month|month}}-{{year}}</div>
   </a>
   <span class="item"></span>
+    </div>
+  </div>
 
   {% for year in range(2014, 2010, -1) %}
+    <div class="item">{{year}}
+      <div class="list">
     {% for month in range(12, 0, -1) %}
     {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
     <a class="item" href="{{url_for('static', filename=filename)}}">
@@ -33,6 +79,28 @@
     </a>
     <span class="item"></span>
     {% endfor %}
+      </div>
+    </div>
   {% endfor %}
 </div>
+</div>
+
+<div class="ui segment">
+<h3>Terms and conditions</h3>
+
+<p>The data published is Crown copyright unless it is marked as third party copyright.  Where the data is Crown copyright it will be assumed to be available under the terms of the Open Government Licence (OGL) unless it is marked as either:</p>
+
+<ul>
+  <li>Value added material</li>
+  <li>Material licensed by a Crown organisation under a delegation from the Controller of HM Stationery Office (HMSO)</li>
+</ul>
+
+<p>You can use Crown Copyright data available under the OGL in your own information applications so long as you comply with the standard OGL terms and conditions. If the Crown copyright data is not available under the OGL you must comply with the licence terms and condition which are identified as being applicable to that data.</p>
+
+<p>If the data published is marked as third party copyright you have no right to copy or reuse that data without first seeking permission from the copyright owner.</p>
+
+<p><a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">OGL terms and conditions (National Archives website)</a></p>
+</div>
+
+
 {% endblock %}

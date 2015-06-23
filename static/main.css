@@ -20,3 +20,7 @@ a.item:hover {
     /* To make Search button and Show All button same height*/
     line-height: 1.1;
 }
+
+.ui.list .list > a.item, .ui.list > a.item {
+    color: #669900;
+}
