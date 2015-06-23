@@ -18,7 +18,11 @@
       <form action="{{url_for('search')}}" id="search-form">
         <div class="ui action left icon input">
           <i class="search icon"></i>
+          {% if request.args.get('q') %}
+          <input name="q" type="text" value="{{request.args.get('q')}}">
+          {% else %}
           <input name="q" type="text" placeholder="Enter keywords here">
+          {% endif %}
           <button class="ui green button">Search</button>
         </div>
       </form>
