@@ -1,15 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-<div >Search</h1>
-
-<form action="{{url_for('search')}}">
-  <div class="ui action left icon input">
-    <i class="search icon"></i>
-    <input name="q" type="text" placeholder="Enter keywords here">
-    <button class="ui green button">Search</button>
-  </div>
-</form>
-
 <h2>Suggested Searches</h2>
 
 <div class="ui horizontal list massive">
@@ -18,12 +8,6 @@
       <div class="content">
         Construction
       </div>
-    </a>
-    <a class="item" href="{{url_for('contracts')}}">
-        <i class="black star outline icon"></i>
-        <div class="content">
-          All Contracts
-        </div>
     </a>
     <a class="item" href="{{url_for('search')}}?q=cleaning">
       <i class="black home icon"></i>
