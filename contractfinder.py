@@ -8,7 +8,7 @@ import pyes
 import urlparse
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
 db = SQLAlchemy(app)
 
 class Notice(db.Model):
