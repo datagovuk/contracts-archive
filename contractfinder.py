@@ -1,6 +1,6 @@
 from flask import (Flask, abort, send_from_directory,
                    render_template, request, url_for,
-                   Markup, redirect)
+                   Markup, redirect, make_response)
 from flask.ext.sqlalchemy import SQLAlchemy
 from reverse_proxied import ReverseProxied
 import os
@@ -138,6 +138,13 @@ class SearchPaginator(object):
     @property
     def total(self):
         return self.total_records
+
+@app.route('/robots.txt')
+def robots():
+    txt = render_template('robots.html')
+    response = make_response(txt)
+    response.headers["Content-Type"] = "text/plain"
+    return response
 
 @app.route('/')
 def front_page():
