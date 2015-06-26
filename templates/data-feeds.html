@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
+<h1>Data Download</h1>
+
+<p>This page contains historic data which can be downloaded in XML or CSV format.</p>
+
+<p>Terms and conditions apply to the use of this data. See the bottom of this page for details.</p>
+
 <div class="ui segment">
 <h3>Activity summary and buyer group list</h3>
 
@@ -8,6 +14,10 @@
 <p>The second is a list of buyer groups registered on Contracts Finder is also available.</p>
 
 <p>Thirdly, a list of the pipelines that government is currently aware of that could result in contract opportunities.</p>
+
+<p>They are in CSV format which can be opened as a spreadsheet or a simple text file.</p>
+
+<p><strong>They are no longer updated daily and contain the information present when the site was made read only.</strong></p>
 
 <div class="ui list">
   <a class="item" href="{{url_for('static', filename='files/Summary_of_activity_by_department.csv')}}">
@@ -27,6 +37,12 @@
 <div class="ui segment">
 <h3>Detailed reports - recent notices</h3>
 
+<p>Detailed contract information is available in XML and CSV formats.</p>
+
+<p>The CSV version includes - for each notice - its title and brief description, the name of the buying organisation and the contract value. The machine-readable XML document contains additional data for each notice, including CPV codes.</p>
+
+<p><strong>They are no longer updated daily and contain the information present when the site was made read only.</strong></p>
+
 <div class="ui list">
   <a class="item" href="{{url_for('static', filename='files/notices.xml')}}">
     <i class="icon file code outline"></i>
@@ -41,7 +57,7 @@
 
 <div class="ui segment">
 <h3>Detailed reports - older notices</h3>
-<p>Each month a snapshot is taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
+<p>Each month a snapshot was taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
 <div class="ui celled list">
   <div class="item">2015
     <div class="ui list">
