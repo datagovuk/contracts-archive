@@ -6,16 +6,7 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
   </head>
   <body>
-    <a href="{{ url_for('front_page') }}">
-      <div class="ui header" id="main-header">
-        <i class="search icon"></i>
-        <div class="content">
-          Contracts
-          <div class="sub header">Archive</div>
-        </div>
-      </div>
-    </a>
-    <div class="container">
+    <div id="contracts-container">
       {% if errors %}
       <div class="ui red inverted segment">
         {% for error in errors %}
@@ -23,7 +14,27 @@
         {% endfor %}
       </div>
       {% endif %}
+
+      <form action="{{url_for('search')}}" id="search-form">
+        <div class="ui action left icon input">
+          <i class="search icon"></i>
+          {% if request.args.get('q') %}
+          <input name="q" type="text" value="{{request.args.get('q')}}">
+          {% else %}
+          <input name="q" type="text" placeholder="Enter keywords here">
+          {% endif %}
+          <button class="ui green button">Search Contracts</button>
+        </div>
+      </form>
+      <a href="{{url_for('contracts')}}">
+        <button class="ui green button">Show All Contracts</button>
+      </a>
+
   {% block body %}{% endblock %}
+     <div class="ui segment">
+       <p><strong>Warning: This is archived data that is no longer being updated.</strong></p>
+       <p>The Contracts Archive site is currently a <a href="https://www.gov.uk/help/beta">beta site</a>. If you notice any issues please <a href="http://data.gov.uk/contact">contact us</a>.</p>
+     </div>
     </div>
   </body>
 </html>

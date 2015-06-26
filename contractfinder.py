@@ -150,11 +150,11 @@ def contracts():
 
     prevlink = None
     if pagination.has_prev:
-        prevlink = url_for('contracts', page=page-1, _external=True)
+        prevlink = url_for('contracts', page=page-1)
 
     nextlink = None
     if pagination.has_next:
-        nextlink = url_for('contracts', page=page+1, _external=True)
+        nextlink = url_for('contracts', page=page+1)
 
     return render_template('contracts.html',
                            contracts=pagination.items,
@@ -177,11 +177,11 @@ def search():
 
     prevlink = None
     if pagination.has_prev:
-        prevlink = url_for('search', page=page-1, q=query, _external=True)
+        prevlink = url_for('search', page=page-1, q=query)
 
     nextlink = None
     if pagination.has_next:
-        nextlink = url_for('search', page=page+1, q=query, _external=True)
+        nextlink = url_for('search', page=page+1, q=query)
 
     return render_template('contracts.html',
                            contracts=pagination.items,

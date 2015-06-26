@@ -1,19 +1,26 @@
-body {
-  width: 700px;
-  margin: 0px auto;
-}
-
-#main-header {
-  background: #00b5ad;
-  margin: 0;
-  padding: 10px;
-}
-
-.container {
+#contracts-container {
   background: white;
   padding: 20px;
 }
 
+#search-form {
+  float: left;
+  margin-right: 5px;
+}
+
 #pagenumber {
     margin-bottom: 10px;
+}
+
+a.item:hover {
+    text-decoration: none;
+}
+
+.ui.button {
+    /* To make Search button and Show All button same height*/
+    line-height: 1.1;
+}
+
+.ui.list .list > a.item, .ui.list > a.item {
+    color: #669900;
 }
