@@ -15,6 +15,8 @@
       </div>
       {% endif %}
 
+      <div class="ui stackable two column grid">
+        <div class="column">
       <form action="{{url_for('search')}}" id="search-form">
         <div class="ui action left icon input">
           <i class="search icon"></i>
@@ -26,9 +28,13 @@
           <button class="ui green button">Search Contracts</button>
         </div>
       </form>
+        </div>
+        <div class="column">
       <a href="{{url_for('contracts')}}">
         <button class="ui green button">Show All Contracts</button>
       </a>
+        </div>
+      </div>
 
   {% block body %}{% endblock %}
      <div class="ui segment">
