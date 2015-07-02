@@ -25,10 +25,8 @@
           {% endif %}
           <button class="ui green button">Search Contracts</button>
         </div>
+        <a id="showall" class="ui green button" href="{{url_for('contracts')}}">Show All Contracts</a>
       </form>
-      <a href="{{url_for('contracts')}}">
-        <button class="ui green button">Show All Contracts</button>
-      </a>
 
   {% block body %}{% endblock %}
      <div class="ui segment">
