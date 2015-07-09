@@ -105,7 +105,9 @@ class SearchPaginator(object):
                 q = pyes.query.QueryStringQuery(query)
             else:
                 q = pyes.query.MatchAllQuery()
-            search_result = es.search(q, size=20, start=page-1)
+
+            start = (page - 1) * 20
+            search_result = es.search(q, size=20, start=start)
 
             self.total_records = search_result.total
 
