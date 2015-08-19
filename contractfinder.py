@@ -102,7 +102,7 @@ class SearchPaginator(object):
         try:
             es = pyes.ES('127.0.0.1:9200')
             if query:
-                q = pyes.query.QueryStringQuery(query)
+                q = pyes.query.QueryStringQuery(self.escape_query(query))
             else:
                 q = pyes.query.MatchAllQuery()
 
@@ -140,6 +140,10 @@ class SearchPaginator(object):
     @property
     def total(self):
         return self.total_records
+
+    def escape_query(self, query):
+        # / denotes the start of a Lucene regex so needs escaping
+        return query.replace('/', '\\/') 
 
 @app.route('/robots.txt')
 def robots():
