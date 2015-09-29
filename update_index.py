@@ -17,4 +17,10 @@ for notice in Notice.query.all():
     document['ref_no'] = notice.ref_no
     document['title'] = notice.details.title
     document['description'] = notice.details.description
+    document['buying_org'] = notice.details.buying_org
+    document['location_name'] = notice.location.name
+    document['contact_address'] = notice.details.contact_address
+    if notice.award:
+        document['business_name'] = notice.award.details.business_name
+        document['business_address'] = notice.award.details.business_address
     es.index(document, 'main-index', 'notices', notice.id)
