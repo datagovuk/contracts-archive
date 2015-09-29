@@ -21,7 +21,7 @@ for notice in Notice.query.all():
     document['contact_address'] = notice.details.contact_address
     if notice.location:
         document['location_name'] = notice.location.name
-    if notice.award:
+    if notice.award and notice.award.details:
         document['business_name'] = notice.award.details.business_name
         document['business_address'] = notice.award.details.business_address
     es.index(document, 'main-index', 'notices', notice.id)
