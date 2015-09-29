@@ -18,8 +18,9 @@ for notice in Notice.query.all():
     document['title'] = notice.details.title
     document['description'] = notice.details.description
     document['buying_org'] = notice.details.buying_org
-    document['location_name'] = notice.location.name
     document['contact_address'] = notice.details.contact_address
+    if notice.location:
+        document['location_name'] = notice.location.name
     if notice.award:
         document['business_name'] = notice.award.details.business_name
         document['business_address'] = notice.award.details.business_address
