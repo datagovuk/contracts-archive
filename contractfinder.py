@@ -6,6 +6,7 @@ from reverse_proxied import ReverseProxied
 import os
 import pyes
 import urlparse
+
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
@@ -103,15 +104,17 @@ class SearchPaginator(object):
             es = pyes.ES('127.0.0.1:9200')
             if query:
                 q = pyes.query.QueryStringQuery(self.escape_query(query))
+                sort = "_score"
             else:
                 q = pyes.query.MatchAllQuery()
+                sort = "id"
 
             start = (page - 1) * 20
-            search_result = es.search(q, size=20, start=start)
+            result = es.search(q, 'main-index', 'notices', size=20, start=start, sort=sort)
 
-            self.total_records = search_result.total
+            self.total_records = result.total
 
-            for notice in search_result:
+            for notice in result:
                 self.contracts.append(Notice.query.get(notice['id']))
         except pyes.exceptions.NoServerAvailable:
             self.errors.append("Server Error: Unable to perform search")
@@ -156,32 +159,13 @@ def robots():
 def front_page():
     return render_template('front.html')
 
-@app.route('/contracts/')
-def contracts():
-    page = request.args.get('page', 1, type=int)
-    pagination = Notice.query.paginate(page, 20, error_out=False)
-
-    prevlink = None
-    if pagination.has_prev:
-        prevlink = url_for('contracts', page=page-1)
-
-    nextlink = None
-    if pagination.has_next:
-        nextlink = url_for('contracts', page=page+1)
-
-    return render_template('contracts.html',
-                           contracts=pagination.items,
-                           prevlink=prevlink,
-                           nextlink=nextlink,
-                           page=page,
-                           total_pages=pagination.pages)
-
 @app.route('/contract/<int:notice_id>/')
 def contract(notice_id):
     contract = Notice.query.filter_by(id=notice_id).first_or_404()
     return render_template('contract.html', contract=contract)
 
-@app.route('/search/')
+@app.route('/contracts/', endpoint='contracts')
+@app.route('/search/', endpoint='search')
 def search():
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
