@@ -92,32 +92,34 @@ class AwardDetail(db.Model):
     business_name = db.Column(db.Text)
     business_address = db.Column(db.Text)
 
+def make_query(query, page):
+    try:
+        es = pyes.ES('127.0.0.1:9200')
+        if query:
+            q = pyes.query.QueryStringQuery(self.escape_query(query))
+            sort = "_score"
+        else:
+            q = pyes.query.MatchAllQuery()
+            sort = "id"
+
+        start = (page - 1) * 20
+        result = es.search(q, 'main-index', 'notices', size=20, start=start, sort=sort)
+        return result
+    except pyes.exceptions.NoServerAvailable:
+        return None
+
 class SearchPaginator(object):
-    def __init__(self, query, page):
-        self.errors = []
+    def __init__(self, result, page):
         self.contracts = []
         self.total_records = 0
-        self.total_pages = 0
+        self.total_pages = 1
         self.page = page
 
-        try:
-            es = pyes.ES('127.0.0.1:9200')
-            if query:
-                q = pyes.query.QueryStringQuery(self.escape_query(query))
-                sort = "_score"
-            else:
-                q = pyes.query.MatchAllQuery()
-                sort = "id"
-
-            start = (page - 1) * 20
-            result = es.search(q, 'main-index', 'notices', size=20, start=start, sort=sort)
-
+        if result:
             self.total_records = result.total
 
             for notice in result:
                 self.contracts.append(Notice.query.get(notice['id']))
-        except pyes.exceptions.NoServerAvailable:
-            self.errors.append("Server Error: Unable to perform search")
 
         if self.total_records:
             self.total_pages = self.total_records / 20
@@ -167,10 +169,14 @@ def contract(notice_id):
 @app.route('/contracts/', endpoint='contracts')
 @app.route('/search/', endpoint='search')
 def search():
+    errors = []
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
 
-    pagination = SearchPaginator(query, page)
+    result = make_query(query, page)
+    if not result:
+        errors.append('Server Error: Unable to perform search')
+    pagination = SearchPaginator(result, page)
 
     prevlink = None
     if pagination.has_prev:
@@ -188,7 +194,7 @@ def search():
                            page=page,
                            total_pages=pagination.pages,
                            total=pagination.total,
-                           errors=pagination.errors)
+                           errors=errors)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):
