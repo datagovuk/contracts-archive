@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString, MatchAll
+from elasticsearch_dsl.filter import F
 import urlparse
 import json
 
@@ -100,7 +101,7 @@ def escape_query(query):
     # / denotes the start of a Lucene regex so needs escaping
     return query.replace('/', '\\/')
 
-def make_query(query, page):
+def make_query(query, filters, page):
     try:
         client = Elasticsearch()
         s = Search(client, index="main-index")
@@ -117,6 +118,15 @@ def make_query(query, page):
         start = (page - 1) * 20
         end = start + 20
         s = s[start:end]
+
+        must_filters = []
+        for fil in filters:
+            must_filters.append(F('term', **fil))
+
+        if must_filters:
+            #s = s.post_filter('bool', must=must_filters)
+            s = s.filter('bool', must=must_filters)
+
         print json.dumps(s.to_dict(), indent=2)
 
         result = s.execute()
@@ -185,7 +195,13 @@ def search():
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
 
-    result = make_query(query, page)
+    filters = []
+    for term in ['buying_org', 'location_name', 'business_name']:
+        if request.args.get(term):
+            filters.append({'{0}.raw'.format(term):
+                            request.args.get(term)})
+
+    result = make_query(query, filters, page)
     if result is None:
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
