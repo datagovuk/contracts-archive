@@ -1,12 +1,18 @@
+from flask import Flask
 from contractfinder import Notice
+
+app = Flask(__name__)
+app.config.from_envvar('SETTINGS')
+
+INDEX = app.config['INDEX']
 
 import pyes
 
 es = pyes.ES('127.0.0.1:9200')
 
 try:
-    #es.indices.delete_index('main-index')
-    #es.indices.create_index('main-index')
+    #es.indices.delete_index(INDEX)
+    #es.indices.create_index(INDEX)
     pass
 except:
     pass
@@ -41,7 +47,7 @@ mapping = {
     },
 }
 
-es.indices.put_mapping('notices', {'properties': mapping}, ['main-index'])
+es.indices.put_mapping('notices', {'properties': mapping}, [INDEX])
 
 for notice in Notice.query.all():
     document = {}
@@ -56,4 +62,4 @@ for notice in Notice.query.all():
     if notice.award and notice.award.details:
         document['business_name'] = notice.award.details.business_name
         document['business_address'] = notice.award.details.business_address
-    es.index(document, 'main-index', 'notices', notice.id)
+    es.index(document, INDEX, 'notices', notice.id)

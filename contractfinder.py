@@ -14,6 +14,7 @@ import json
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+app.config.from_envvar('SETTINGS')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
 db = SQLAlchemy(app)
 
@@ -104,7 +105,7 @@ def escape_query(query):
 def make_query(query, filters, page):
     try:
         client = Elasticsearch()
-        s = Search(client, index="main-index")
+        s = Search(client, index=app.config['INDEX'])
 
         if query:
             s = s.query(QueryString(query=escape_query(query))).sort("_score")
