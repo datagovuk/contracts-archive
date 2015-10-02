@@ -92,11 +92,16 @@ class AwardDetail(db.Model):
     business_name = db.Column(db.Text)
     business_address = db.Column(db.Text)
 
+
+def escape_query(query):
+    # / denotes the start of a Lucene regex so needs escaping
+    return query.replace('/', '\\/')
+
 def make_query(query, page):
     try:
         es = pyes.ES('127.0.0.1:9200')
         if query:
-            q = pyes.query.QueryStringQuery(self.escape_query(query))
+            q = pyes.query.QueryStringQuery(escape_query(query))
             sort = "_score"
         else:
             q = pyes.query.MatchAllQuery()
@@ -145,10 +150,6 @@ class SearchPaginator(object):
     @property
     def total(self):
         return self.total_records
-
-    def escape_query(self, query):
-        # / denotes the start of a Lucene regex so needs escaping
-        return query.replace('/', '\\/') 
 
 @app.route('/robots.txt')
 def robots():
