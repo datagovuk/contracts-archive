@@ -27,3 +27,15 @@ a.item:hover {
 .ui.list .list > a.item, .ui.list > a.item {
     color: #669900;
 }
+
+#search-menu {
+    width: 100%;
+}
+
+#search-menu select {
+    width: 100%;
+}
+
+#search-menu input {
+    width: 100%;
+}

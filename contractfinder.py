@@ -6,6 +6,7 @@ from reverse_proxied import ReverseProxied
 import os
 import pyes
 import urlparse
+import json
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
@@ -92,7 +93,6 @@ class AwardDetail(db.Model):
     business_name = db.Column(db.Text)
     business_address = db.Column(db.Text)
 
-
 def escape_query(query):
     # / denotes the start of a Lucene regex so needs escaping
     return query.replace('/', '\\/')
@@ -107,10 +107,20 @@ def make_query(query, page):
             q = pyes.query.MatchAllQuery()
             sort = "id"
 
+        buying_org = pyes.aggs.TermsAgg('buying_org', field="buying_org.raw", size=0)
+        location_name = pyes.aggs.TermsAgg('location_name', field="location_name.raw", size=0)
+        business_name = pyes.aggs.TermsAgg('business_name', field="business_name.raw", size=0)
+
         start = (page - 1) * 20
-        result = es.search(q, 'main-index', 'notices', size=20, start=start, sort=sort)
+        search_query = pyes.Search(q, size=20, start=start, sort=sort)
+        search_query.agg.add(buying_org)
+        search_query.agg.add(location_name)
+        search_query.agg.add(business_name)
+        print json.dumps(search_query.serialize(), indent=2)
+
+        result = es.search(search_query, 'main-index', 'notices')
         return result
-    except pyes.exceptions.NoServerAvailable:
+    except pyes.exceptions.NoServerAvailable, ex:
         return None
 
 class SearchPaginator(object):
@@ -167,8 +177,8 @@ def contract(notice_id):
     contract = Notice.query.filter_by(id=notice_id).first_or_404()
     return render_template('contract.html', contract=contract)
 
-@app.route('/contracts/', endpoint='contracts')
-@app.route('/search/', endpoint='search')
+@app.route('/contracts/', endpoint='contracts', methods=['GET', 'POST'])
+@app.route('/search/', endpoint='search', methods=['GET', 'POST'])
 def search():
     errors = []
     query = request.args.get('q', '')
@@ -178,6 +188,11 @@ def search():
     if result is None:
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
+
+    if result:
+        facets = result.aggs
+    else:
+        facets = {}
 
     prevlink = None
     if pagination.has_prev:
@@ -195,7 +210,8 @@ def search():
                            page=page,
                            total_pages=pagination.pages,
                            total=pagination.total,
-                           errors=errors)
+                           errors=errors,
+                           facets=facets)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):

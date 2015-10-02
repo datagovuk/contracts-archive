@@ -12,6 +12,36 @@
   <h1>All Contracts</h1>
 {% endif %}
 
+<div class="ui grid">
+    <div class="four wide column">
+        <div id="search-menu" class="ui vertical menu">
+            <form method="GET" action="{{url_for('search')}}">
+            <div class="item">
+                <input type="text" name="q" value="{{request.args.q}}">
+            </div>
+        {% for name, agg in facets.items() %}
+            <div class="item">
+                <div class="header">{{name}}</div>
+                <select name="{{name}}">
+                  <option value=""></option>
+                {% for opt in agg.buckets %}
+                  {% if request.args[name] == opt.key %}
+                    <option value="{{opt.key}}" selected>{{opt.key}} ({{opt.doc_count}})</option>
+                  {% else %}
+                    <option value="{{opt.key}}">{{opt.key}} ({{opt.doc_count}})</option>
+                  {% endif %}
+                {% endfor %}
+                </select>
+            </div>
+        {% endfor %}
+          <div class="item">
+              <button class="ui green button">Update results</button>
+          </div>
+        </form>
+        </div>
+    </div>
+    <div class="twelve wide column">
+
 <table class="ui table celled striped">
     <thead>
         <tr><th>Contract</th><th>Location</th><th>Value</th><th>Type</th></tr>
@@ -60,4 +90,7 @@
     </a>
   </div>
 </div>
+</div>
+</div>
+
 {% endblock %}

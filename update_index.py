@@ -11,6 +11,38 @@ try:
 except:
     pass
 
+mapping = {
+    'location_name': {
+        'type': 'string',
+        'fields': {
+            'raw' : {
+                'type': 'string',
+                'index': 'not_analyzed'
+            }
+        }
+    },
+    'buying_org': {
+        'type': 'string',
+        'fields': {
+            'raw' : {
+                'type': 'string',
+                'index': 'not_analyzed'
+            }
+        }
+    },
+    'business_name': {
+        'type': 'string',
+        'fields': {
+            'raw' : {
+                'type': 'string',
+                'index': 'not_analyzed'
+            }
+        }
+    },
+}
+
+es.indices.put_mapping('notices', {'properties': mapping}, ['main-index'])
+
 for notice in Notice.query.all():
     document = {}
     document['id'] = notice.id
