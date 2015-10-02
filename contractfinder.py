@@ -4,7 +4,10 @@ from flask import (Flask, abort, send_from_directory,
 from flask.ext.sqlalchemy import SQLAlchemy
 from reverse_proxied import ReverseProxied
 import os
-import pyes
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
+from elasticsearch_dsl import Search
+from elasticsearch_dsl.query import QueryString, MatchAll
 import urlparse
 import json
 
@@ -99,28 +102,26 @@ def escape_query(query):
 
 def make_query(query, page):
     try:
-        es = pyes.ES('127.0.0.1:9200')
-        if query:
-            q = pyes.query.QueryStringQuery(escape_query(query))
-            sort = "_score"
-        else:
-            q = pyes.query.MatchAllQuery()
-            sort = "id"
+        client = Elasticsearch()
+        s = Search(client, index="main-index")
 
-        buying_org = pyes.aggs.TermsAgg('buying_org', field="buying_org.raw", size=0)
-        location_name = pyes.aggs.TermsAgg('location_name', field="location_name.raw", size=0)
-        business_name = pyes.aggs.TermsAgg('business_name', field="business_name.raw", size=0)
+        if query:
+            s = s.query(QueryString(query=escape_query(query))).sort("_score")
+        else:
+            s = s.query(MatchAll()).sort("id")
+
+        s.aggs.bucket('buying_org', 'terms', field='buying_org.raw', size=0)
+        s.aggs.bucket('location_name', 'terms', field='location_name.raw', size=0)
+        s.aggs.bucket('business_name', 'terms', field='business_name.raw', size=0)
 
         start = (page - 1) * 20
-        search_query = pyes.Search(q, size=20, start=start, sort=sort)
-        search_query.agg.add(buying_org)
-        search_query.agg.add(location_name)
-        search_query.agg.add(business_name)
-        print json.dumps(search_query.serialize(), indent=2)
+        end = start + 20
+        s = s[start:end]
+        print json.dumps(s.to_dict(), indent=2)
 
-        result = es.search(search_query, 'main-index', 'notices')
+        result = s.execute()
         return result
-    except pyes.exceptions.NoServerAvailable, ex:
+    except ConnectionError:
         return None
 
 class SearchPaginator(object):
@@ -131,7 +132,7 @@ class SearchPaginator(object):
         self.page = page
 
         if result:
-            self.total_records = result.total
+            self.total_records = result.hits.total
 
             for notice in result:
                 self.contracts.append(Notice.query.get(notice['id']))
@@ -190,7 +191,7 @@ def search():
     pagination = SearchPaginator(result, page)
 
     if result:
-        facets = result.aggs
+        facets = result.aggregations
     else:
         facets = {}
 
