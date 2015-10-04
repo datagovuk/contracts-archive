@@ -1,4 +1,13 @@
 {% extends "layout.html" %}
+
+{% block extra_head %}
+<script type="text/javascript">
+  $(function() {
+      $(".chosen-select").chosen();
+  });
+</script>
+{% endblock %}
+
 {% block body %}
 {% if query is defined %}
   <h1>Search Results</h1>
@@ -22,7 +31,7 @@
         {% for name, agg in facets.items() %}
             <div class="item">
                 <div class="header">{{name}}</div>
-                <select name="{{name}}">
+                <select class="chosen-select" name="{{name}}">
                   <option value=""></option>
                 {% for opt in agg.buckets %}
                   {% if request.args[name] == opt.key %}
