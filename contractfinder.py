@@ -212,13 +212,17 @@ def search():
     else:
         facets = {}
 
+    parameters = dict(request.args.items())
+
     prevlink = None
     if pagination.has_prev:
-        prevlink = url_for('search', page=page-1, q=query)
+        parameters['page'] = page - 1
+        prevlink = url_for('search', **parameters)
 
     nextlink = None
     if pagination.has_next:
-        nextlink = url_for('search', page=page+1, q=query)
+        parameters['page'] = page + 1
+        nextlink = url_for('search', **parameters)
 
     return render_template('contracts.html',
                            contracts=pagination.items,
