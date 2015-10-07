@@ -301,6 +301,25 @@ def external_link(s):
     else:
         return urlparse.urljoin('http://', s)
 
+@app.template_filter('sort_bucket')
+def sort_bucket(bucket):
+    """
+    Sort buckets alphabetically
+
+    Aggregation is sorted by _term, but because it is a not_analyzed field the
+    sorting is case sensitive which is not what we want.
+
+    See this issue:
+
+    https://stackoverflow.com/questions/30135448/elasticsearch-terms-aggregation-order-case-insensitive
+    """
+    def case_insensitive_cmp(x, y):
+        return cmp(
+            x['key'].lower().strip(),
+            y['key'].lower().strip()
+        )
+    return sorted(bucket, cmp=case_insensitive_cmp)
+
 if __name__ == '__main__':
     app.debug = True
     app.run()

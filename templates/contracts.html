@@ -33,7 +33,7 @@
                 <div class="header">{{name}}</div>
                 <select class="chosen-select" name="{{name}}">
                   <option value=""></option>
-                {% for opt in agg.buckets %}
+                {% for opt in agg.buckets|sort_bucket %}
                   {% if request.args[name] == opt.key %}
                     <option value="{{opt.key}}" selected>{{opt.key}}</option>
                   {% else %}
