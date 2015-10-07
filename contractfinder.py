@@ -82,7 +82,17 @@ class Region(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
     code = db.Column(db.Text)
-    parent_id = db.Column(db.Integer)
+    parent_id = db.Column(db.Integer, db.ForeignKey('region.id'))
+    parent_region = db.relationship('Region', remote_side='Region.id')
+
+    def location_path(self):
+        parts = [self.name]
+        parent = self.parent_region
+        while parent is not None:
+            parts.insert(0, parent.name)
+            parent = parent.parent_region
+
+        return "/".join(parts)
 
 class Award(db.Model):
     id = db.Column(db.Integer, primary_key=True)
