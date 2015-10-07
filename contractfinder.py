@@ -102,35 +102,6 @@ def escape_query(query):
     # / denotes the start of a Lucene regex so needs escaping
     return query.replace('/', '\\/')
 
-def make_facets():
-    try:
-        client = Elasticsearch()
-
-        s = Search(client, index=app.config['INDEX'])
-        s = s.query(MatchAll())
-        s.aggs.bucket('buying_org',
-                      'terms',
-                      field='buying_org.raw',
-                      size=0,
-                      order={'_term': 'asc'})
-        s.aggs.bucket('location_name',
-                      'terms',
-                      field='location_name.raw',
-                      size=0,
-                      order={'_term': 'asc'})
-        s.aggs.bucket('business_name',
-                      'terms',
-                      field='business_name.raw',
-                      size=0,
-                      order={'_term': 'asc'})
-
-        print json.dumps(s.to_dict(), indent=2)
-
-        result = s.execute()
-        return result.aggregations
-    except ConnectionError:
-        return {}
-
 def make_query(query, filters, page):
     try:
         client = Elasticsearch()
@@ -140,6 +111,23 @@ def make_query(query, filters, page):
             s = s.query(QueryString(query=escape_query(query))).sort("_score")
         else:
             s = s.query(MatchAll()).sort("id")
+
+        s.aggs.bucket('global', 'global', None)
+        s.aggs['global'].bucket('buying_org',
+                                'terms',
+                                field='buying_org.raw',
+                                size=0,
+                                order={'_term': 'asc'})
+        s.aggs['global'].bucket('location_name',
+                                'terms',
+                                field='location_name.raw',
+                                size=0,
+                                order={'_term': 'asc'})
+        s.aggs['global'].bucket('business_name',
+                                'terms',
+                                field='business_name.raw',
+                                size=0,
+                                order={'_term': 'asc'})
 
         start = (page - 1) * 20
         end = start + 20
@@ -233,7 +221,8 @@ def search():
     pagination = SearchPaginator(result, page)
 
     if result:
-        facets = make_facets()
+        facets = result.aggregations['global']
+        del facets['doc_count']
     else:
         facets = {}
 
