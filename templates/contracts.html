@@ -3,7 +3,7 @@
 {% block extra_head %}
 <script type="text/javascript">
   $(function() {
-      $(".chosen-select").chosen();
+      $(".chosen-select").chosen({allow_single_deselect: true});
   });
 </script>
 {% endblock %}
@@ -35,9 +35,9 @@
                   <option value=""></option>
                 {% for opt in agg.buckets %}
                   {% if request.args[name] == opt.key %}
-                    <option value="{{opt.key}}" selected>{{opt.key}} ({{opt.doc_count}})</option>
+                    <option value="{{opt.key}}" selected>{{opt.key}}</option>
                   {% else %}
-                    <option value="{{opt.key}}">{{opt.key}} ({{opt.doc_count}})</option>
+                    <option value="{{opt.key}}">{{opt.key}}</option>
                   {% endif %}
                 {% endfor %}
                 </select>
