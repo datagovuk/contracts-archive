@@ -133,6 +133,11 @@ def make_query(query, filters, page):
                                 field='location_name.raw',
                                 size=0,
                                 order={'_term': 'asc'})
+        s.aggs['global'].bucket('location_path',
+                                'terms',
+                                field='location_path.tree',
+                                size=0,
+                                order={'_term': 'asc'})
         s.aggs['global'].bucket('business_name',
                                 'terms',
                                 field='business_name.raw',
@@ -231,8 +236,12 @@ def search():
     pagination = SearchPaginator(result, page)
 
     if result:
-        facets = result.aggregations['global']
-        del facets['doc_count']
+        facets = {}
+        for name, facet in result.aggregations['global'].items():
+            if name in ['doc_count', 'location_name']:
+                continue
+
+            facets[name] = facet
     else:
         facets = {}
 
