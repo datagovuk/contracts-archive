@@ -92,7 +92,7 @@ class Region(db.Model):
             parts.insert(0, parent.name)
             parent = parent.parent_region
 
-        return "/".join(parts)
+        return '/' + '/'.join(parts)
 
 class Award(db.Model):
     id = db.Column(db.Integer, primary_key=True)

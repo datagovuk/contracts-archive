@@ -87,7 +87,10 @@ for notice in Notice.query.all():
     document['contact_address'] = notice.details.contact_address
     if notice.location:
         document['location_name'] = notice.location.name
-        document['location_path'] = notice.location.location_path()
+        location_path = notice.location.location_path()
+        document['location_path'] = location_path[len('/European Union'):]
+    else:
+        document['location_path'] = '/United Kingdom'
     if notice.award and notice.award.details:
         document['business_name'] = notice.award.details.business_name
         document['business_address'] = notice.award.details.business_address
