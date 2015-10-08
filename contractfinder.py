@@ -245,18 +245,15 @@ def search():
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
 
-    if result:
-        facets = {}
+    facets = {}
 
-        facets['region'] = {'buckets': [{'key': val} for val in regions_mapping.keys()]}
+    facets['region'] = {'buckets': [{'key': val} for val in regions_mapping.keys()]}
 
-        for name, facet in result.aggregations['global'].items():
-            if name in ['doc_count']:
-                continue
+    for name, facet in result.aggregations['global'].items():
+        if name in ['doc_count']:
+            continue
 
-            facets[name] = facet
-    else:
-        facets = {}
+        facets[name] = facet
 
     parameters = dict(request.args.items())
 
