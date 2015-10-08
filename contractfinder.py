@@ -12,6 +12,8 @@ from elasticsearch_dsl.filter import F
 import urlparse
 import json
 
+from regions import regions_mapping
+
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_envvar('SETTINGS')
@@ -128,16 +130,6 @@ def make_query(query, filters, page):
                                 field='buying_org.raw',
                                 size=0,
                                 order={'_term': 'asc'})
-        s.aggs['global'].bucket('location_name',
-                                'terms',
-                                field='location_name.raw',
-                                size=0,
-                                order={'_term': 'asc'})
-        s.aggs['global'].bucket('location_path',
-                                'terms',
-                                field='location_path.tree',
-                                size=0,
-                                order={'_term': 'asc'})
         s.aggs['global'].bucket('business_name',
                                 'terms',
                                 field='business_name.raw',
@@ -160,7 +152,7 @@ def make_query(query, filters, page):
 
         result = s.execute()
         return result
-    except ConnectionError:
+    except ConnectionError, ex:
         return None
 
 class SearchPaginator(object):
@@ -225,10 +217,15 @@ def search():
     page = request.args.get('page', 1, type=int)
 
     filters = []
-    for term in ['buying_org', 'location_name', 'business_name']:
+    for term in ['buying_org', 'business_name']:
         if request.args.get(term):
             filters.append({'{0}.raw'.format(term):
                             request.args.get(term)})
+
+    region = request.args.get('region')
+    if region:
+        filters.append({'location_path.tree':
+                        regions_mapping[region]})
 
     result = make_query(query, filters, page)
     if result is None:
@@ -237,8 +234,11 @@ def search():
 
     if result:
         facets = {}
+
+        facets['region'] = {'buckets': [{'key': val} for val in regions_mapping.keys()]}
+
         for name, facet in result.aggregations['global'].items():
-            if name in ['doc_count', 'location_name']:
+            if name in ['doc_count']:
                 continue
 
             facets[name] = facet
