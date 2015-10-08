@@ -85,6 +85,8 @@ for notice in Notice.query.all():
     document['description'] = notice.details.description
     document['buying_org'] = notice.details.buying_org
     document['contact_address'] = notice.details.contact_address
+    document['min_value'] = notice.min_value
+    document['max_value'] = notice.max_value
     if notice.location:
         document['location_name'] = notice.location.name
         location_path = notice.location.location_path()

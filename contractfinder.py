@@ -140,13 +140,9 @@ def make_query(query, filters, page):
         end = start + 20
         s = s[start:end]
 
-        must_filters = []
-        for fil in filters:
-            must_filters.append(F('term', **fil))
-
-        if must_filters:
-            #s = s.post_filter('bool', must=must_filters)
-            s = s.filter('bool', must=must_filters)
+        if filters:
+            #s = s.post_filter('bool', must=filters)
+            s = s.filter('bool', must=filters)
 
         #print json.dumps(s.to_dict(), indent=2)
 
@@ -217,15 +213,32 @@ def search():
     page = request.args.get('page', 1, type=int)
 
     filters = []
-    for term in ['buying_org', 'business_name']:
-        if request.args.get(term):
-            filters.append({'{0}.raw'.format(term):
-                            request.args.get(term)})
+
+    buying_org = request.args.get('buying_org')
+    if buying_org:
+        filters.append(F('term', **{'buying_org.raw': buying_org}))
+
+    business_name = request.args.get('business_name')
+    if business_name:
+        filters.append(F('term', **{'business_name.raw': business_name}))
 
     region = request.args.get('region')
     if region:
-        filters.append({'location_path.tree':
-                        regions_mapping[region]})
+        filters.append(F('term', **{'location_path.tree': regions_mapping[region]}))
+
+    try:
+        min_value = request.args.get('min_value')
+        if min_value != '' and min_value is not None:
+            filters.append(F('range', min_value={'gte': float(min_value)}))
+    except ValueError:
+        errors.append('Error: parsing Minimum Contract Value')
+
+    try:
+        max_value = request.args.get('max_value')
+        if max_value != '' and max_value is not None:
+            filters.append(F('range', max_value={'lte': float(max_value)}))
+    except ValueError:
+        errors.append('Error: parsing Maximum Contract Value')
 
     result = make_query(query, filters, page)
     if result is None:

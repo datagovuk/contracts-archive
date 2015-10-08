@@ -43,6 +43,14 @@
                 </select>
             </div>
         {% endfor %}
+            <div class="item">
+                <div class="header">Minimum Contract Value (&pound;)</div>
+                <input type="text" name="min_value" value="{{request.args.min_value}}"></input>
+            </div>
+            <div class="item">
+                <div class="header">Maximum Contract Value (&pound;)</div>
+                <input type="text" name="max_value" value="{{request.args.max_value}}"></input>
+            </div>
           <div class="item">
               <button class="ui green button">Update results</button>
           </div>
