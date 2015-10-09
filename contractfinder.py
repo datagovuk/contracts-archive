@@ -175,7 +175,7 @@ def search():
     page = request.args.get('page', 1, type=int)
 
     result = make_query(query, page)
-    if not result:
+    if result is None:
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
 
