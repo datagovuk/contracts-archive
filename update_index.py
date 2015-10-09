@@ -96,4 +96,10 @@ for notice in Notice.query.all():
     if notice.award and notice.award.details:
         document['business_name'] = notice.award.details.business_name
         document['business_address'] = notice.award.details.business_address
+    if notice.date_awarded:
+        document['date_awarded'] = notice.date_awarded.strftime('%Y-%m-%d')
+    if notice.date_created:
+        document['date_created'] = notice.date_created.strftime('%Y-%m-%d')
+    if notice.deadline_date:
+        document['deadline_date'] = notice.deadline_date.strftime('%Y-%m-%d')
     es.index(document, INDEX, 'notices', notice.id)
