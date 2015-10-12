@@ -124,18 +124,6 @@ def make_query(query, filters, page):
         else:
             s = s.query(MatchAll()).sort("id")
 
-        s.aggs.bucket('global', 'global', None)
-        s.aggs['global'].bucket('buying_org',
-                                'terms',
-                                field='buying_org.raw',
-                                size=0,
-                                order={'_term': 'asc'})
-        s.aggs['global'].bucket('business_name',
-                                'terms',
-                                field='business_name.raw',
-                                size=0,
-                                order={'_term': 'asc'})
-
         start = (page - 1) * 20
         end = start + 20
         s = s[start:end]
@@ -247,13 +235,8 @@ def search():
 
     facets = {}
 
-    facets['region'] = {'buckets': [{'key': val} for val in regions_mapping.keys()]}
-
-    for name, facet in result.aggregations['global'].items():
-        if name in ['doc_count']:
-            continue
-
-        facets[name] = facet
+    facets['region'] = {'title': 'Region',
+                        'buckets': [{'key': val} for val in regions_mapping.keys()]}
 
     parameters = dict(request.args.items())
 

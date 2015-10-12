@@ -30,7 +30,7 @@
             </div>
         {% for name, agg in facets.items() %}
             <div class="item">
-                <div class="header">{{name}}</div>
+                <div class="header">{{agg.title}}</div>
                 <select class="chosen-select" name="{{name}}">
                   <option value=""></option>
                 {% for opt in agg.buckets|sort_bucket %}
