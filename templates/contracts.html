@@ -25,6 +25,18 @@
         <div id="search-menu" class="ui vertical menu">
             <form method="GET" action="{{url_for('search')}}">
             <div class="item">
+                <div class="header">Sort By</div>
+                <select name="sort_by">
+                {% for key, value in sort.items() %}
+                  {% if request.args.sort_by == key %}
+                  <option value="{{key}}" selected>{{value.title}}</option>
+                  {% else %}
+                  <option value="{{key}}">{{value.title}}</option>
+                  {% endif %}
+                {% endfor %}
+                </select>
+            </div>
+            <div class="item">
                 <div class="header">Keywords</div>
                 <input type="text" name="q" value="{{request.args.q}}">
             </div>
@@ -76,7 +88,7 @@
 
 <table class="ui table celled striped">
     <thead>
-        <tr><th>Contract</th><th>Location</th><th>Value</th><th>Type</th></tr>
+        <tr><th>Contract</th><th>Location</th><th>Value</th><th>Type</th><th>Deadline Date</th></tr>
     </thead>
     <tbody>
     {% for contract in contracts %}
@@ -96,6 +108,11 @@
       {% endif %}
       </td>
       <td style="text-align:center">{{contract.type}}</td>
+      {% if contract.deadline_date %}
+      <td style="text-align:center">{{contract.deadline_date.strftime('%d/%m/%Y')}}</td>
+      {% else %}
+      <td style="text-align:center">&nbsp;</td>
+      {% endif %}
     </tr>
     {% endfor %}
     </tbody>

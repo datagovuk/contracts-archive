@@ -11,6 +11,7 @@ from elasticsearch_dsl.query import QueryString, MatchAll
 from elasticsearch_dsl.filter import F
 import urlparse
 import json
+import collections
 
 from regions import regions_mapping
 
@@ -24,15 +25,34 @@ def escape_query(query):
     # / denotes the start of a Lucene regex so needs escaping
     return query.replace('/', '\\/')
 
-def make_query(query, filters, page):
+SORT_BY = collections.OrderedDict()
+SORT_BY['relevance'] = {'title': 'Relevance', 'value': '_score'}
+SORT_BY['min_value'] = {'title': 'Minimum Contract Value Ascending', 'value': 'min_value'}
+SORT_BY['min_value_desc'] = {'title': 'Minimum Contract Value Descending', 'value': '-min_value'}
+SORT_BY['max_value'] = {'title': 'Maximum Contract Value Ascending', 'value': 'max_value'}
+SORT_BY['max_value_desc'] = {'title': 'Maximum Contract Value Descending', 'value': '-max_value'}
+SORT_BY['pub_date'] = {'title': 'Publication Date Ascending', 'value': 'date_created'}
+SORT_BY['pub_date_desc'] = {'title': 'Publication Date Descending', 'value': '-date_created'}
+SORT_BY['deadline_date'] = {'title': 'Deadline Date Ascending', 'value': 'deadline_date'}
+SORT_BY['deadline_date_desc'] = {'title': 'Deadline Date Descending', 'value': '-deadline_date'}
+SORT_BY['award_date'] = {'title': 'Awarded Date Ascending', 'value': 'date_awarded'}
+SORT_BY['award_date_desc'] = {'title': 'Awarded Date Descending', 'value': '-date_awarded'}
+
+def make_query(query, filters, page, sort_by):
     try:
         client = Elasticsearch()
         s = Search(client, index=app.config['INDEX'])
 
         if query:
-            s = s.query(QueryString(query=escape_query(query))).sort("_score")
+            s = s.query(QueryString(query=escape_query(query)))
+            if not sort_by:
+                sort_by = "relevance"
         else:
-            s = s.query(MatchAll()).sort("id")
+            s = s.query(MatchAll())
+            if not sort_by:
+                sort_by = "pub_date"
+
+        s = s.sort(SORT_BY.get(sort_by, 'pub_date')['value'])
 
         start = (page - 1) * 20
         end = start + 20
@@ -110,6 +130,8 @@ def search():
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
 
+    sort_by = request.args.get('sort_by')
+
     filters = []
 
     buying_org = request.args.get('buying_org')
@@ -178,7 +200,7 @@ def search():
         filters.append(F('range', date_awarded=date_awarded_range))
 
 
-    result = make_query(query, filters, page)
+    result = make_query(query, filters, page, sort_by)
     if result is None:
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
@@ -209,7 +231,8 @@ def search():
                            total_pages=pagination.pages,
                            total=pagination.total,
                            errors=errors,
-                           facets=facets)
+                           facets=facets,
+                           sort=SORT_BY)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):
