@@ -45,6 +45,24 @@
                 <div class="header">Keywords</div>
                 <input type="text" name="q" value="{{request.args.q}}">
             </div>
+        {% if request.args.buying_org %}
+            <div class="item">
+                <div class="header">Buying organisation</div>
+                <select class="chosen-select" name="buying_org">
+                  <option value=""></option>
+                  <option value="{{request.args.buying_org}}" selected>{{request.args.buying_org}}</option>
+                </select>
+            </div>
+        {% endif %}
+        {% if request.args.business_name %}
+            <div class="item">
+                <div class="header">Awarded Supplier</div>
+                <select class="chosen-select" name="business_name">
+                  <option value=""></option>
+                  <option value="{{request.args.business_name}}" selected>{{request.args.business_name}}</option>
+                </select>
+            </div>
+        {% endif %}
         {% for name, agg in facets.items() %}
             <div class="item">
                 <div class="header">{{agg.title}}</div>
