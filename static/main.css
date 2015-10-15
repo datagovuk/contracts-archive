@@ -28,6 +28,11 @@ a.item:hover {
     color: #669900;
 }
 
+.ui.menu .item .header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
 #search-menu {
     width: 100%;
 }

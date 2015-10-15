@@ -1,24 +1,23 @@
 {% extends "layout.html" %}
 
 {% block extra_head %}
+<link rel="stylesheet" type="text/css" href="//data.gov.uk/css/jquery-ui-1.9.2.custom.datepicker.min.css" />
+<script type="text/javascript" src="//data.gov.uk/scripts/vendor/jquery-ui-1.9.2.custom.datepicker.min.js"></script>
+
 <script type="text/javascript">
   $(function() {
       $(".chosen-select").chosen({allow_single_deselect: true});
+      $('.needs-datepicker').datepicker({dateFormat:'yy-mm-dd'});
   });
 </script>
 {% endblock %}
 
 {% block body %}
-{% if query is defined %}
-  <h1>Search Results</h1>
-  <p><strong>You Searched for:</strong> "{{query}}"</p>
-  {% if total == 1 %}
+<h1>Search Results</h1>
+{% if total == 1 %}
   <p>We found 1 result</p>
-  {% else %}
-  <p>We found {{total}} results</p>
-  {% endif %}
 {% else %}
-  <h1>All Contracts</h1>
+  <p>We found {{total}} results</p>
 {% endif %}
 
 <div class="ui two column stackable grid">
@@ -26,6 +25,7 @@
         <div id="search-menu" class="ui vertical menu">
             <form method="GET" action="{{url_for('search')}}">
             <div class="item">
+                <div class="header">Keywords</div>
                 <input type="text" name="q" value="{{request.args.q}}">
             </div>
         {% for name, agg in facets.items() %}
@@ -50,6 +50,21 @@
             <div class="item">
                 <div class="header">Maximum Contract Value (&pound;)</div>
                 <input type="text" name="max_value" value="{{request.args.max_value}}"></input>
+            </div>
+            <div class="item">
+                <div class="header">Publication Date</div>
+                <p>From<p><input type="text" name="publication_date_from" value="{{request.args.publication_date_from}}" class="needs-datepicker"></input>
+                <p>To</p><input type="text" name="publication_date_to" value="{{request.args.publication_date_to}}" class="needs-datepicker"></input>
+            </div>
+            <div class="item">
+                <div class="header">Deadline Date</div>
+                <p>From<p><input type="text" name="deadline_date_from" value="{{request.args.deadline_date_from}}" class="needs-datepicker"></input>
+                <p>To</p><input type="text" name="deadline_date_to" value="{{request.args.deadline_date_to}}" class="needs-datepicker"></input>
+            </div>
+            <div class="item">
+                <div class="header">Awarded Date</div>
+                <p>From<p><input type="text" name="award_date_from" value="{{request.args.award_date_from}}" class="needs-datepicker"></input>
+                <p>To</p><input type="text" name="award_date_to" value="{{request.args.award_date_to}}" class="needs-datepicker"></input>
             </div>
           <div class="item">
               <button class="ui green button">Update results</button>

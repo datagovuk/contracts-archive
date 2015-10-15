@@ -138,6 +138,46 @@ def search():
     except ValueError:
         errors.append('Error: parsing Maximum Contract Value')
 
+    # Date Created
+    date_created_range = {}
+    date_created_min = request.args.get('publication_date_from')
+    if date_created_min:
+        date_created_range['gte'] = date_created_min
+
+    date_created_max = request.args.get('publication_date_to')
+    if date_created_max:
+        date_created_range['lte'] = date_created_max
+
+    if date_created_range:
+        filters.append(F('range', date_created=date_created_range))
+
+    # Deadline Date
+    deadline_date_range = {}
+    deadline_date_min = request.args.get('deadline_date_from')
+    if deadline_date_min:
+        deadline_date_range['gte'] = deadline_date_min
+
+    deadline_date_max = request.args.get('deadline_date_from')
+    if deadline_date_max:
+        deadline_date_range['lte'] = deadline_date_max
+
+    if deadline_date_range:
+        filters.append(F('range', deadline_date=deadline_date_range))
+
+    # Date Awarded
+    date_awarded_range = {}
+    date_awarded_min = request.args.get('award_date_from')
+    if date_awarded_min:
+        date_awarded_range['gte'] = date_awarded_min
+
+    date_awarded_max = request.args.get('award_date_to')
+    if date_awarded_max:
+        date_awarded_range['lte'] = date_awarded_max
+
+    if date_awarded_range:
+        filters.append(F('range', date_awarded=date_awarded_range))
+
+
     result = make_query(query, filters, page)
     if result is None:
         errors.append('Server Error: Unable to perform search')
