@@ -25,6 +25,12 @@
         <div id="search-menu" class="ui vertical menu">
             <form method="GET" action="{{url_for('search')}}">
             <div class="item">
+                <div class="header">Keywords</div>
+                <div class="ui input">
+                    <input type="text" name="q" value="{{request.args.q}}">
+                </div>
+            </div>
+            <div class="item">
                 <div class="header">Sort By</div>
                 {% if request.args.get('q') %}
                   {% set default_sort = 'relevance' %}
@@ -40,10 +46,6 @@
                   {% endif %}
                 {% endfor %}
                 </select>
-            </div>
-            <div class="item">
-                <div class="header">Keywords</div>
-                <input type="text" name="q" value="{{request.args.q}}">
             </div>
         {% if request.args.buying_org %}
             <div class="item">
