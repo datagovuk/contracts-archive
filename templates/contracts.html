@@ -8,6 +8,11 @@
   $(function() {
       $(".chosen-select").chosen({allow_single_deselect: true});
       $('.needs-datepicker').datepicker({dateFormat:'yy-mm-dd'});
+      $('.disable').attr('disabled','disabled');
+      $('.remove.circle.link.icon').css('display', 'block').click(function(){
+          $(this).siblings('input').val('');
+          $('form').submit();
+      });
   });
 </script>
 {% endblock %}
@@ -50,19 +55,19 @@
         {% if request.args.buying_org %}
             <div class="item">
                 <div class="header">Buying organisation</div>
-                <select class="chosen-select" name="buying_org">
-                  <option value=""></option>
-                  <option value="{{request.args.buying_org}}" selected>{{request.args.buying_org}}</option>
-                </select>
+                <div class="ui icon input">
+                    <input class="disable" type="text" name="buying_org" value="{{request.args.buying_org}}">
+                    <i class="remove circle link icon" style="display: none;"></i>
+                </div>
             </div>
         {% endif %}
         {% if request.args.business_name %}
             <div class="item">
                 <div class="header">Awarded Supplier</div>
-                <select class="chosen-select" name="business_name">
-                  <option value=""></option>
-                  <option value="{{request.args.business_name}}" selected>{{request.args.business_name}}</option>
-                </select>
+                <div class="ui icon input">
+                    <input class="disable" type="text" name="business_name" value="{{request.args.business_name}}">
+                    <i class="remove circle link icon"></i>
+                </div>
             </div>
         {% endif %}
         {% for name, agg in facets.items() %}
