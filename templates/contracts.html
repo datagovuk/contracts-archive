@@ -87,26 +87,48 @@
         {% endfor %}
             <div class="item">
                 <div class="header">Minimum Contract Value (&pound;)</div>
-                <input type="text" name="min_value" value="{{request.args.min_value}}"></input>
+                <div class="ui input">
+                    <input type="text" name="min_value" value="{{request.args.min_value}}"></input>
+                </div>
             </div>
             <div class="item">
                 <div class="header">Maximum Contract Value (&pound;)</div>
-                <input type="text" name="max_value" value="{{request.args.max_value}}"></input>
+                <div class="ui input">
+                    <input type="text" name="max_value" value="{{request.args.max_value}}"></input>
+                </div>
             </div>
             <div class="item">
                 <div class="header">Publication Date</div>
-                <p>From<p><input type="text" name="publication_date_from" value="{{request.args.publication_date_from}}" class="needs-datepicker"></input>
-                <p>To</p><input type="text" name="publication_date_to" value="{{request.args.publication_date_to}}" class="needs-datepicker"></input>
+                <p>From</p>
+                <div class="ui input">
+                    <input type="text" name="publication_date_from" value="{{request.args.publication_date_from}}" class="needs-datepicker"></input>
+                </div>
+                <p>To</p>
+                <div class="ui input">
+                    <input type="text" name="publication_date_to" value="{{request.args.publication_date_to}}" class="needs-datepicker"></input>
+                </div>
             </div>
             <div class="item">
                 <div class="header">Deadline Date</div>
-                <p>From<p><input type="text" name="deadline_date_from" value="{{request.args.deadline_date_from}}" class="needs-datepicker"></input>
-                <p>To</p><input type="text" name="deadline_date_to" value="{{request.args.deadline_date_to}}" class="needs-datepicker"></input>
+                <p>From<p>
+                <div class="ui input">
+                    <input type="text" name="deadline_date_from" value="{{request.args.deadline_date_from}}" class="needs-datepicker"></input>
+                </div>
+                <p>To</p>
+                <div class="ui input">
+                    <input type="text" name="deadline_date_to" value="{{request.args.deadline_date_to}}" class="needs-datepicker"></input>
+                </div>
             </div>
             <div class="item">
                 <div class="header">Awarded Date</div>
-                <p>From<p><input type="text" name="award_date_from" value="{{request.args.award_date_from}}" class="needs-datepicker"></input>
-                <p>To</p><input type="text" name="award_date_to" value="{{request.args.award_date_to}}" class="needs-datepicker"></input>
+                <p>From<p>
+                <div class="ui input">
+                    <input type="text" name="award_date_from" value="{{request.args.award_date_from}}" class="needs-datepicker"></input>
+                </div>
+                <p>To</p>
+                <div class="ui input">
+                    <input type="text" name="award_date_to" value="{{request.args.award_date_to}}" class="needs-datepicker"></input>
+                </div>
             </div>
           <div class="item">
               <button class="ui green button">Update results</button>
