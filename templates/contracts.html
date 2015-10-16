@@ -29,7 +29,7 @@
                 {% if request.args.get('q') %}
                   {% set default_sort = 'relevance' %}
                 {% else %}
-                  {% set default_sort = 'pub_date' %}
+                  {% set default_sort = 'deadline_date_desc' %}
                 {% endif %}
                 <select class="chosen-select" name="sort_by">
                 {% for key, value in sort.items() %}

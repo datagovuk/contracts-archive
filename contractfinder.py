@@ -50,9 +50,9 @@ def make_query(query, filters, page, sort_by):
         else:
             s = s.query(MatchAll())
             if not sort_by:
-                sort_by = "pub_date"
+                sort_by = "deadline_date_desc"
 
-        s = s.sort(SORT_BY.get(sort_by, 'pub_date')['value'])
+        s = s.sort(SORT_BY.get(sort_by, 'deadline_date_desc')['value'])
 
         start = (page - 1) * 20
         end = start + 20
