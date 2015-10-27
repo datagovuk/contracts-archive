@@ -1,1 +1,1 @@
-INDEX = 'main-index'
+INDEX = 'live-index'
