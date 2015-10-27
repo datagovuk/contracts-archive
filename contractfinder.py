@@ -38,6 +38,8 @@ SORT_BY['deadline_date_desc'] = {'title': 'Deadline Date Descending', 'value': '
 SORT_BY['award_date'] = {'title': 'Awarded Date Ascending', 'value': 'date_awarded'}
 SORT_BY['award_date_desc'] = {'title': 'Awarded Date Descending', 'value': '-date_awarded'}
 
+DEFAULT_SORT_BY = 'pub_date_desc'
+
 def make_query(query, filters, page, sort_by):
     try:
         client = Elasticsearch()
@@ -50,19 +52,16 @@ def make_query(query, filters, page, sort_by):
         else:
             s = s.query(MatchAll())
             if not sort_by:
-                sort_by = "deadline_date_desc"
+                sort_by = DEFAULT_SORT_BY
 
-        s = s.sort(SORT_BY.get(sort_by, 'deadline_date_desc')['value'])
+        s = s.sort(SORT_BY.get(sort_by, DEFAULT_SORT_BY)['value'])
 
         start = (page - 1) * 20
         end = start + 20
         s = s[start:end]
 
         if filters:
-            #s = s.post_filter('bool', must=filters)
             s = s.filter('bool', must=filters)
-
-        #print json.dumps(s.to_dict(), indent=2)
 
         result = s.execute()
         return result

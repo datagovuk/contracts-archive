@@ -40,7 +40,7 @@
                 {% if request.args.get('q') %}
                   {% set default_sort = 'relevance' %}
                 {% else %}
-                  {% set default_sort = 'deadline_date_desc' %}
+                  {% set default_sort = 'pub_date_desc' %}
                 {% endif %}
                 <select class="chosen-select" name="sort_by">
                 {% for key, value in sort.items() %}
@@ -140,7 +140,13 @@
 
 <table class="ui table celled striped">
     <thead>
-        <tr><th>Contract</th><th>Location</th><th>Value</th><th>Type</th><th>Deadline Date</th></tr>
+        <tr>
+            <th>Contract</th>
+            <th>Location</th>
+            <th>Value</th>
+            <th>Type</th>
+            <th>Publication Date</th>
+        </tr>
     </thead>
     <tbody>
     {% for contract in contracts %}
@@ -160,8 +166,8 @@
       {% endif %}
       </td>
       <td style="text-align:center">{{contract.type}}</td>
-      {% if contract.deadline_date %}
-      <td style="text-align:center">{{contract.deadline_date.strftime('%d/%m/%Y')}}</td>
+      {% if contract.date_created %}
+      <td style="text-align:center">{{contract.date_created.strftime('%d/%m/%Y')}}</td>
       {% else %}
       <td style="text-align:center">&nbsp;</td>
       {% endif %}
