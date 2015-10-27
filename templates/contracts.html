@@ -146,6 +146,12 @@
             <th>Value</th>
             <th>Type</th>
             <th>Publication Date</th>
+        {% if request.args.get('sort_by') in ['deadline_date', 'deadline_date_desc'] %}
+            <th>Deadline Date</th>
+        {% endif %}
+        {% if request.args.get('sort_by') in ['award_date', 'award_date_desc'] %}
+            <th>Award Date</th>
+        {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -166,10 +172,27 @@
       {% endif %}
       </td>
       <td style="text-align:center">{{contract.type}}</td>
+
       {% if contract.date_created %}
       <td style="text-align:center">{{contract.date_created.strftime('%d/%m/%Y')}}</td>
       {% else %}
       <td style="text-align:center">&nbsp;</td>
+      {% endif %}
+
+      {% if request.args.get('sort_by') in ['deadline_date', 'deadline_date_desc'] %}
+        {% if contract.deadline_date %}
+          <td style="text-align:center">{{contract.deadline_date.strftime('%d/%m/%Y')}}</td>
+        {% else %}
+          <td style="text-align:center">&nbsp;</td>
+        {% endif %}
+      {% endif %}
+
+      {% if request.args.get('sort_by') in ['award_date', 'award_date_desc'] %}
+        {% if contract.date_awarded %}
+          <td style="text-align:center">{{contract.date_awarded.strftime('%d/%m/%Y')}}</td>
+        {% else %}
+          <td style="text-align:center">&nbsp;</td>
+        {% endif %}
       {% endif %}
     </tr>
     {% endfor %}
