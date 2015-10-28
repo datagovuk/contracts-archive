@@ -1,0 +1,15 @@
+regions_mapping = {
+    'Any region': '/United Kingdom',
+    'North East': '/United Kingdom/England/North East',
+    'North West': '/United Kingdom/England/North West',
+    'Yorkshire and The Humber': '/United Kingdom/England/Yorkshire and The Humber',
+    'East Midlands': '/United Kingdom/England/East Midlands',
+    'West Midlands': '/United Kingdom/England/West Midlands',
+    'East of England': '/United Kingdom/England/East of England',
+    'London': '/United Kingdom/England/London',
+    'South East': '/United Kingdom/England/South East',
+    'South West': '/United Kingdom/England/South West',
+    'Scotland': '/United Kingdom/Scotland',
+    'Wales': '/United Kingdom/Wales',
+    'Northern Ireland': '/United Kingdom/Northern Ireland',
+}

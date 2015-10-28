@@ -97,7 +97,12 @@
   {% endif %}
 
   <tr>
-    <td>Name of the buying organisation</td><td>{{contract.details.buying_org|d('N/A', True)}}</td>
+      <td>Name of the buying organisation</td>
+      <td>{{contract.details.buying_org|d('N/A', True)}}
+      {% if contract.details.buying_org %}
+          <a href="{{url_for('search')}}?buying_org={{contract.details.buying_org|urlencode}}">(see other contracts from this organisation)<a/>
+      {% endif %}
+      </td>
   </tr>
 </table>
 
@@ -141,7 +146,7 @@
 <h2>Awarded suppliers</h2>
 <table class="ui definition celled table">
 <tr>
-    <td>Name</td><td>{{contract.award.details.business_name}}</td>
+    <td>Name</td><td>{{contract.award.details.business_name}} <a href="{{url_for('search')}}?business_name={{contract.award.details.business_name|urlencode}}">(see other contracts awarded to this supplier)<a/></td>
 </tr>
 <tr>
     <td>Address</td><td>{{contract.award.details.business_address}}</td>

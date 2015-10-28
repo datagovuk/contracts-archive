@@ -4,29 +4,19 @@
     <title>Contracts Finder Archive | data.gov.uk</title>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='semantic.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
+    {% block extra_head %}
+    {% endblock %}
   </head>
   <body>
     <div id="contracts-container">
       {% if errors %}
       <div class="ui red inverted segment">
         {% for error in errors %}
-          {{error}}
+          {{error}}<br>
         {% endfor %}
       </div>
       {% endif %}
 
-      <form action="{{url_for('search')}}" id="search-form">
-        <div class="ui action left icon input">
-          <i class="search icon"></i>
-          {% if request.args.get('q') %}
-          <input name="q" type="text" value="{{request.args.get('q')}}">
-          {% else %}
-          <input name="q" type="text" placeholder="Enter keywords here">
-          {% endif %}
-          <button class="ui green button">Search Contracts</button>
-        </div>
-        <a id="showall" class="ui green button" href="{{url_for('contracts')}}">Show All Contracts</a>
-      </form>
 
   {% block body %}{% endblock %}
      <div class="ui segment">

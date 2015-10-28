@@ -1,5 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
+<form action="{{url_for('search')}}" id="search-form">
+  <div class="ui action left icon input">
+    <i class="search icon"></i>
+    {% if request.args.get('q') %}
+    <input name="q" type="text" value="{{request.args.get('q')}}">
+    {% else %}
+    <input name="q" type="text" placeholder="Enter keywords here">
+    {% endif %}
+    <button class="ui green button">Search Contracts</button>
+  </div>
+  <a id="showall" class="ui green button" href="{{url_for('contracts')}}">Show All Contracts</a>
+</form>
+
 <h2>WELCOME TO THE CONTRACTS FINDER ARCHIVE</h2>
 <div class="ui inverted segment">
   <p>WARNING: This is archived data.</p>

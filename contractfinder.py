@@ -1,116 +1,71 @@
 from flask import (Flask, abort, send_from_directory,
                    render_template, request, url_for,
                    Markup, redirect, make_response)
-from flask.ext.sqlalchemy import SQLAlchemy
 from reverse_proxied import ReverseProxied
+from models import db, Notice, NoticeDocument
 import os
-import pyes
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
+from elasticsearch_dsl import Search
+from elasticsearch_dsl.query import QueryString, MatchAll
+from elasticsearch_dsl.filter import F
 import urlparse
+import json
+import collections
+
+from regions import regions_mapping
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+app.config.from_envvar('SETTINGS')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
-db = SQLAlchemy(app)
-
-class Notice(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ref_no = db.Column(db.Text)
-    length = db.Column(db.Integer)
-    location_code = db.Column(db.Text, db.ForeignKey('region.code'))
-    location = db.relationship('Region',
-                    backref=db.backref('all_notices', lazy='dynamic'))
-    is_framework = db.Column(db.Integer)
-    is_sme_friendly = db.Column(db.Integer)
-    is_voluntary_friendly = db.Column(db.Integer)
-    date_awarded = db.Column(db.DateTime)
-    date_created = db.Column(db.DateTime)
-    deadline_date = db.Column(db.DateTime)
-    min_value = db.Column(db.Integer)
-    max_value = db.Column(db.Integer)
-    status = db.Column(db.Integer)
-    type_id = db.Column(db.Integer)
-
-    @property
-    def details(self):
-        # Quick fix - show details of first language (usually English)
-        return self.all_details.order_by('language_id').first()
-    @property
-    def type(self):
-        if self.type_id == 33:
-            return 'Pipeline'
-        else:
-            return 'Tender or contract'
-    
-
-class NoticeDetail(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
-    notice = db.relationship('Notice',
-                    backref=db.backref('all_details', lazy='dynamic'))
-    title = db.Column(db.Text)
-    description = db.Column(db.Text)
-    buying_org = db.Column(db.Text)
-    language_id = db.Column(db.Integer)
-    contact_email = db.Column(db.Text)
-    location_text = db.Column(db.Text)
-    supplier_instructions = db.Column(db.Text)
-    deadline_for = db.Column(db.Text)
-    contact_web = db.Column(db.Text)
-    contact_fax = db.Column(db.Text)
-    contact_name = db.Column(db.Text)
-    contact_tel = db.Column(db.Text)
-    contact_extension = db.Column(db.Text)
-    contact_address = db.Column(db.Text)
-
-class NoticeDocument(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
-    notice = db.relationship('Notice',
-                    backref=db.backref('documents', lazy='dynamic'))
-    mimetype = db.Column(db.Text)
-    file_id = db.Column(db.String(36))
-    filename = db.Column(db.Text)
-    title = db.Column(db.Text)
-
-class Region(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    code = db.Column(db.Text)
-    parent_id = db.Column(db.Integer)
-
-class Award(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
-    notice = db.relationship('Notice',
-                    backref=db.backref('award', uselist=False))
-
-class AwardDetail(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    award_id = db.Column(db.Integer, db.ForeignKey('award.id'))
-    award = db.relationship('Award',
-                    backref=db.backref('details', uselist=False))
-    business_name = db.Column(db.Text)
-    business_address = db.Column(db.Text)
-
+db.init_app(app)
 
 def escape_query(query):
     # / denotes the start of a Lucene regex so needs escaping
     return query.replace('/', '\\/')
 
-def make_query(query, page):
+SORT_BY = collections.OrderedDict()
+SORT_BY['relevance'] = {'title': 'Relevance', 'value': '_score'}
+SORT_BY['min_value'] = {'title': 'Minimum Contract Value Ascending', 'value': 'min_value'}
+SORT_BY['min_value_desc'] = {'title': 'Minimum Contract Value Descending', 'value': '-min_value'}
+SORT_BY['max_value'] = {'title': 'Maximum Contract Value Ascending', 'value': 'max_value'}
+SORT_BY['max_value_desc'] = {'title': 'Maximum Contract Value Descending', 'value': '-max_value'}
+SORT_BY['pub_date'] = {'title': 'Publication Date Ascending', 'value': 'date_created'}
+SORT_BY['pub_date_desc'] = {'title': 'Publication Date Descending', 'value': '-date_created'}
+SORT_BY['deadline_date'] = {'title': 'Deadline Date Ascending', 'value': 'deadline_date'}
+SORT_BY['deadline_date_desc'] = {'title': 'Deadline Date Descending', 'value': '-deadline_date'}
+SORT_BY['award_date'] = {'title': 'Awarded Date Ascending', 'value': 'date_awarded'}
+SORT_BY['award_date_desc'] = {'title': 'Awarded Date Descending', 'value': '-date_awarded'}
+
+DEFAULT_SORT_BY = 'pub_date_desc'
+
+def make_query(query, filters, page, sort_by):
     try:
-        es = pyes.ES('127.0.0.1:9200')
+        client = Elasticsearch()
+        s = Search(client, index=app.config['INDEX'])
+
         if query:
-            q = pyes.query.QueryStringQuery(escape_query(query))
-            sort = "_score"
+            s = s.query(QueryString(query=escape_query(query)))
+            if not sort_by:
+                sort_by = "relevance"
         else:
-            q = pyes.query.MatchAllQuery()
-            sort = "id"
+            s = s.query(MatchAll())
+            if not sort_by:
+                sort_by = DEFAULT_SORT_BY
+
+        s = s.sort(SORT_BY.get(sort_by, DEFAULT_SORT_BY)['value'])
 
         start = (page - 1) * 20
-        result = es.search(q, 'main-index', 'notices', size=20, start=start, sort=sort)
+        end = start + 20
+        s = s[start:end]
+
+        if filters:
+            s = s.filter('bool', must=filters)
+
+        result = s.execute()
         return result
-    except pyes.exceptions.NoServerAvailable:
+    except ConnectionError, ex:
         return None
 
 class SearchPaginator(object):
@@ -121,7 +76,7 @@ class SearchPaginator(object):
         self.page = page
 
         if result:
-            self.total_records = result.total
+            self.total_records = result.hits.total
 
             for notice in result:
                 self.contracts.append(Notice.query.get(notice['id']))
@@ -167,25 +122,104 @@ def contract(notice_id):
     contract = Notice.query.filter_by(id=notice_id).first_or_404()
     return render_template('contract.html', contract=contract)
 
-@app.route('/contracts/', endpoint='contracts')
-@app.route('/search/', endpoint='search')
+@app.route('/contracts/', endpoint='contracts', methods=['GET', 'POST'])
+@app.route('/search/', endpoint='search', methods=['GET', 'POST'])
 def search():
     errors = []
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
 
-    result = make_query(query, page)
+    sort_by = request.args.get('sort_by')
+
+    filters = []
+
+    buying_org = request.args.get('buying_org')
+    if buying_org:
+        filters.append(F('term', **{'buying_org.raw': buying_org}))
+
+    business_name = request.args.get('business_name')
+    if business_name:
+        filters.append(F('term', **{'business_name.raw': business_name}))
+
+    region = request.args.get('region')
+    if region:
+        filters.append(F('term', **{'location_path.tree': regions_mapping[region]}))
+
+    try:
+        min_value = request.args.get('min_value')
+        if min_value != '' and min_value is not None:
+            filters.append(F('range', min_value={'gte': float(min_value)}))
+    except ValueError:
+        errors.append('Error: parsing Minimum Contract Value')
+
+    try:
+        max_value = request.args.get('max_value')
+        if max_value != '' and max_value is not None:
+            filters.append(F('range', max_value={'lte': float(max_value)}))
+    except ValueError:
+        errors.append('Error: parsing Maximum Contract Value')
+
+    # Date Created
+    date_created_range = {}
+    date_created_min = request.args.get('publication_date_from')
+    if date_created_min:
+        date_created_range['gte'] = date_created_min
+
+    date_created_max = request.args.get('publication_date_to')
+    if date_created_max:
+        date_created_range['lte'] = date_created_max
+
+    if date_created_range:
+        filters.append(F('range', date_created=date_created_range))
+
+    # Deadline Date
+    deadline_date_range = {}
+    deadline_date_min = request.args.get('deadline_date_from')
+    if deadline_date_min:
+        deadline_date_range['gte'] = deadline_date_min
+
+    deadline_date_max = request.args.get('deadline_date_from')
+    if deadline_date_max:
+        deadline_date_range['lte'] = deadline_date_max
+
+    if deadline_date_range:
+        filters.append(F('range', deadline_date=deadline_date_range))
+
+    # Date Awarded
+    date_awarded_range = {}
+    date_awarded_min = request.args.get('award_date_from')
+    if date_awarded_min:
+        date_awarded_range['gte'] = date_awarded_min
+
+    date_awarded_max = request.args.get('award_date_to')
+    if date_awarded_max:
+        date_awarded_range['lte'] = date_awarded_max
+
+    if date_awarded_range:
+        filters.append(F('range', date_awarded=date_awarded_range))
+
+
+    result = make_query(query, filters, page, sort_by)
     if result is None:
         errors.append('Server Error: Unable to perform search')
     pagination = SearchPaginator(result, page)
 
+    facets = {}
+
+    facets['region'] = {'title': 'Region',
+                        'buckets': [{'key': val} for val in regions_mapping.keys()]}
+
+    parameters = dict(request.args.items())
+
     prevlink = None
     if pagination.has_prev:
-        prevlink = url_for('search', page=page-1, q=query)
+        parameters['page'] = page - 1
+        prevlink = url_for('search', **parameters)
 
     nextlink = None
     if pagination.has_next:
-        nextlink = url_for('search', page=page+1, q=query)
+        parameters['page'] = page + 1
+        nextlink = url_for('search', **parameters)
 
     return render_template('contracts.html',
                            contracts=pagination.items,
@@ -195,7 +229,9 @@ def search():
                            page=page,
                            total_pages=pagination.pages,
                            total=pagination.total,
-                           errors=errors)
+                           errors=errors,
+                           facets=facets,
+                           sort=SORT_BY)
 
 @app.route('/download/<int:notice_id>/<file_id>')
 def download(notice_id, file_id):
@@ -237,6 +273,25 @@ def external_link(s):
         return 'mailto:%s' % s
     else:
         return urlparse.urljoin('http://', s)
+
+@app.template_filter('sort_bucket')
+def sort_bucket(bucket):
+    """
+    Sort buckets alphabetically
+
+    Aggregation is sorted by _term, but because it is a not_analyzed field the
+    sorting is case sensitive which is not what we want.
+
+    See this issue:
+
+    https://stackoverflow.com/questions/30135448/elasticsearch-terms-aggregation-order-case-insensitive
+    """
+    def case_insensitive_cmp(x, y):
+        return cmp(
+            x['key'].lower().strip(),
+            y['key'].lower().strip()
+        )
+    return sorted(bucket, cmp=case_insensitive_cmp)
 
 if __name__ == '__main__':
     app.debug = True
