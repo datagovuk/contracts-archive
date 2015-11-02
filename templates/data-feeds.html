@@ -2,9 +2,20 @@
 {% block body %}
 <h1>Data Download</h1>
 
-<p>This page contains historic data which can be downloaded in XML or CSV format.</p>
+<p>This page contains historic data which can be downloaded in XML, CSV and SQLite database format.</p>
 
 <p>Terms and conditions apply to the use of this data. See the bottom of this page for details.</p>
+
+<div class="ui segment">
+  <h3>Database download</h3>
+  <p>An <a href="https://www.sqlite.org/">SQLite</a> database file of all of the contract information is available to download.</p>
+  <div class="ui list">
+    <a class="item" href="{{url_for('static', filename='files/contracts-finder.db')}}">
+      <i class="icon database outline"></i>
+      <div class="content">Database of all contracts</div>
+    </a>
+  </div>
+</div>
 
 <div class="ui segment">
 <h3>Activity summary and buyer group list</h3>
