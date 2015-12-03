@@ -3,10 +3,11 @@
 <form action="{{url_for('search')}}" id="search-form">
   <div class="ui action left icon input">
     <i class="search icon"></i>
-    {% if request.args.get('q') %}
-    <input name="q" type="text" value="{{request.args.get('q')}}">
+    {% set querystring = request.args.get('query') or request.args.get('q') %}
+    {% if querystring %}
+    <input name="query" type="text" value="{{querystring}}">
     {% else %}
-    <input name="q" type="text" placeholder="Enter keywords here">
+    <input name="query" type="text" placeholder="Enter keywords here">
     {% endif %}
     <button class="ui green button">Search Contracts</button>
   </div>
@@ -32,31 +33,31 @@
 <h2>Suggested Searches</h2>
 
 <div class="ui horizontal list massive">
-    <a class="item" href="{{url_for('search')}}?q=construction">
+    <a class="item" href="{{url_for('search')}}?query=construction">
       <i class="black building outline icon"></i>
       <div class="content">
         Construction
       </div>
     </a>
-    <a class="item" href="{{url_for('search')}}?q=cleaning">
+    <a class="item" href="{{url_for('search')}}?query=cleaning">
       <i class="black home icon"></i>
       <div class="content">
         Cleaning
       </div>
     </a>
-    <a class="item" href="{{url_for('search')}}?q=security">
+    <a class="item" href="{{url_for('search')}}?query=security">
       <i class="black lock icon"></i>
       <div class="content">
         Security
       </div>
     </a>
-    <a class="item" href="{{url_for('search')}}?q=research">
+    <a class="item" href="{{url_for('search')}}?query=research">
       <i class="black lab icon"></i>
       <div class="content">
         Research
       </div>
     </a>
-    <a class="item" href="{{url_for('search')}}?q=training">
+    <a class="item" href="{{url_for('search')}}?query=training">
       <i class="black student icon"></i>
       <div class="content">
         Training

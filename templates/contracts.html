@@ -29,15 +29,16 @@
     <div class="four wide column">
         <div id="search-menu" class="ui vertical menu">
             <form method="GET" action="{{url_for('search')}}">
+            {% set querystring = request.args.get('query') or request.args.get('q') %}
             <div class="item">
                 <div class="header">Keywords</div>
                 <div class="ui input">
-                    <input type="text" name="q" value="{{request.args.q}}">
+                    <input type="text" name="query" value="{{querystring}}">
                 </div>
             </div>
             <div class="item">
                 <div class="header">Sort By</div>
-                {% if request.args.get('q') %}
+                {% if querystring %}
                   {% set default_sort = 'relevance' %}
                 {% else %}
                   {% set default_sort = 'pub_date_desc' %}

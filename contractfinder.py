@@ -126,7 +126,7 @@ def contract(notice_id):
 @app.route('/search/', endpoint='search', methods=['GET', 'POST'])
 def search():
     errors = []
-    query = request.args.get('q', '')
+    query = request.args.get('query', '') or request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
 
     sort_by = request.args.get('sort_by')
