@@ -52,9 +52,11 @@
 {% endif %}
 
 <table class="ui definition celled table">
+  {% if contract.date_created %}
   <tr>
     <td>Created on</td><td>{{contract.date_created.strftime('%d/%m/%Y')}}</td>
   </tr>
+  {% endif %}
   <tr>
     <td>Reference number</td><td>{{contract.ref_no|d('N/A', True)}}</td>
   </tr>
