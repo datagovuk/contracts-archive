@@ -294,5 +294,5 @@ def sort_bucket(bucket):
     return sorted(bucket, cmp=case_insensitive_cmp)
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = False
     app.run()
