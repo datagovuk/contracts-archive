@@ -240,7 +240,7 @@ def download(notice_id, file_id):
     download_file = NoticeDocument.query.filter_by(file_id=file_id).first_or_404()
     
     directory = os.path.abspath(os.path.join(app.instance_path, 'documents', notice_id))
-    filename = download_file.filename
+    filename = download_file.filename.encode('latin1', 'ignore')
     mimetype = download_file.mimetype
 
     return send_from_directory(directory,
