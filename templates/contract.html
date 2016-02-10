@@ -73,9 +73,12 @@
   </tr>
   {% endif %}
 
+  {% if contract.length %}
   <tr>
-    <td>Estimated length of contract</td><td>{{contract.length|d('N/A', True)}} Months</td>
+    <td>Estimated length of contract</td><td>{{contract.length}} {{contract.length_type}}</td>
   </tr>
+  {% endif %}
+
   <tr>
     <td>Estimated value</td><td>{{contract.min_value|currency}} - {{contract.max_value|currency}} </td>
   </tr>

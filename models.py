@@ -6,6 +6,7 @@ class Notice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ref_no = db.Column(db.Text)
     length = db.Column(db.Integer)
+    length_type = db.Column(db.Text)
     location_code = db.Column(db.Text, db.ForeignKey('region.code'))
     location = db.relationship('Region',
                     backref=db.backref('all_notices', lazy='dynamic'))
