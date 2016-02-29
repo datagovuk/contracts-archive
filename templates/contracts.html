@@ -29,7 +29,7 @@
     <div class="four wide column">
         <div id="search-menu" class="ui vertical menu">
             <form method="GET" action="{{url_for('search')}}">
-            {% set querystring = request.args.get('query') or request.args.get('q') %}
+            {% set querystring = request.args.get('query') or request.args.get('q') or '' %}
             <div class="item">
                 <div class="header">Keywords</div>
                 <div class="ui input">
