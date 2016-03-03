@@ -71,7 +71,8 @@
                 </div>
             </div>
         {% endif %}
-        {% for name, agg in facets.items() %}
+        {% for name in facets %}
+          {% with agg = facets[name] %}
             <div class="item">
                 <div class="header">{{agg.title}}</div>
                 <select class="chosen-select" name="{{name}}">
@@ -85,6 +86,7 @@
                 {% endfor %}
                 </select>
             </div>
+          {% endwith %}
         {% endfor %}
             <div class="item">
                 <div class="header">Minimum Contract Value (&pound;)</div>
