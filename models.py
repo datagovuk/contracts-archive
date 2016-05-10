@@ -83,7 +83,7 @@ class Award(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     notice_id = db.Column(db.Integer, db.ForeignKey('notice.id'))
     notice = db.relationship('Notice',
-                    backref=db.backref('award', uselist=False))
+                    backref=db.backref('awards'))
 
 class AwardDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
