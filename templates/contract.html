@@ -147,15 +147,20 @@
 {% endif %}
 </table>
 
-{% if contract.award %}
+{% if contract.awards %}
 <h2>Awarded suppliers</h2>
-<table class="ui definition celled table">
+<table class="ui celled table">
+  <thead>
+    <tr><th>Name</th><th>Address</th></tr>
+  </thead>
+  <tbody>
+    {% for award in contract.awards if award.details.business_name %}
 <tr>
-    <td>Name</td><td>{{contract.award.details.business_name}} <a href="{{url_for('search')}}?business_name={{contract.award.details.business_name|urlencode}}">(see other contracts awarded to this supplier)<a/></td>
+    <td>{{award.details.business_name}} <a href="{{url_for('search')}}?business_name={{award.details.business_name|urlencode}}">(see other contracts awarded to this supplier)<a/></td>
+    <td>{{award.details.business_address}}</td>
 </tr>
-<tr>
-    <td>Address</td><td>{{contract.award.details.business_address}}</td>
-</tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endif %}
 
