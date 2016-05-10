@@ -16,7 +16,7 @@ import pyes
 es = pyes.ES('127.0.0.1:9200')
 
 try:
-    es.indices.delete_index(INDEX)
+    #es.indices.delete_index(INDEX)
     es.indices.create_index(INDEX)
     time.sleep(5)
     print "Created Index", INDEX
@@ -97,9 +97,14 @@ with app.app_context():
             document['location_path'] = location_path[len('/European Union'):]
         else:
             document['location_path'] = '/United Kingdom'
-        if notice.award and notice.award.details:
-            document['business_name'] = notice.award.details.business_name
-            document['business_address'] = notice.award.details.business_address
+        if notice.awards:
+            document['business_name'] = []
+            document['business_address'] = []
+            for award in notice.awards:
+                if not award.details or not award.details.business_name:
+                    continue
+                document['business_name'].append(award.details.business_name)
+                document['business_address'].append(award.details.business_address)
         if notice.date_awarded:
             document['date_awarded'] = notice.date_awarded.strftime('%Y-%m-%d')
         if notice.date_created:
