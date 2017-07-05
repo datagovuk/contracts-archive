@@ -1622,3 +1622,35 @@ dt {
 dd {
   width: 50%;
 }
+
+.govuk-breadcrumbs  {
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
+  padding-left: 0;
+  margin-left: -20px;
+}
+.govuk-breadcrumbs ol  {
+  list-style: inherit;
+      display: block;
+  list-style-type: decimal;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-start: 40px;
+}
+.govuk-breadcrumbs ol li {
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 400;
+  float: left;
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  list-style: none;
+  margin-bottom: 0.4em;
+}
+.sep {
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #999;
+}

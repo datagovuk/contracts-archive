@@ -19,6 +19,28 @@
 
 {% block inner_content %}
 
+<div class="govuk-breadcrumbs">
+  <ol>
+    <li class="">
+        <a href="/">Home</a>
+    </li>
+
+    <li class="sep">&gt;</li>
+
+    <li class="">
+        <!-- back via referrer if search -->
+        <a href="{{ back }}">Search</a>
+    </li>
+
+    <li class="sep">&gt;</li>
+
+    <li class="">
+        {{ contract.details.title }}
+    </li>
+  </ol>
+</div>
+
+
 <div class="grid-row">
   <div class="column-full">
     <h1 class="heading-large">{{contract.details.title}}</h1>

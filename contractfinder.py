@@ -13,6 +13,8 @@ import urlparse
 import json
 import collections
 
+from util import get_redirect_target
+
 from regions import regions_mapping
 
 # For nl2br
@@ -125,7 +127,8 @@ def front_page():
 @app.route('/contract/<int:notice_id>/')
 def contract(notice_id):
     contract = Notice.query.filter_by(id=notice_id).first_or_404()
-    return render_template('contract.html', contract=contract)
+    back = get_redirect_target() or url_for('search')
+    return render_template('contract.html', contract=contract, back=back)
 
 @app.route('/contracts/', endpoint='contracts', methods=['GET', 'POST'])
 @app.route('/search/', endpoint='search', methods=['GET', 'POST'])
