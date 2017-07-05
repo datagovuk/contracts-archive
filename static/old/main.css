@@ -1,0 +1,46 @@
+#contracts-container {
+  background: white;
+  padding: 20px;
+}
+
+#search-form {
+  margin-right: 5px;
+}
+
+#showall {
+  vertical-align: top;
+}
+
+#pagenumber {
+    margin-bottom: 10px;
+}
+
+a.item:hover {
+    text-decoration: none;
+}
+
+.ui.button {
+    /* To make Search button and Show All button same height*/
+    line-height: 1.1;
+}
+
+.ui.list .list > a.item, .ui.list > a.item {
+    color: #669900;
+}
+
+.ui.menu .item .header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+#search-menu {
+    width: 100%;
+}
+
+#search-menu select {
+    width: 100%;
+}
+
+#search-menu input {
+    width: 100%;
+}

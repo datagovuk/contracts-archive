@@ -1,28 +1,33 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Contracts Finder Archive | data.gov.uk</title>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='semantic.css') }}">
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}">
-    {% block extra_head %}
-    {% endblock %}
-  </head>
-  <body>
-    <div id="contracts-container">
-      {% if errors %}
-      <div class="ui red inverted segment">
-        {% for error in errors %}
-          {{error}}<br>
-        {% endfor %}
-      </div>
-      {% endif %}
+{% extends 'base.html' %}
+
+{% block head %}
+  <link rel="stylesheet" href="/static/main.css"/>
+{% endblock %}
+
+{% block page_title %}
+  Contract Finder Archive
+{% endblock %}
+
+{% block header_class %}with-proposition{% endblock %}
+
+{% block proposition_header %}
+{% endblock %}
 
 
-  {% block body %}{% endblock %}
-     <div class="ui segment">
-       <p><strong>Warning: This is archived data that is no longer being updated.</strong></p>
-       <p>The Contracts Finder Archive site is currently a <a href="https://www.gov.uk/help/beta">beta site</a>. If you notice any issues please <a href="http://data.gov.uk/contact">contact us</a>.</p>
-     </div>
-    </div>
-  </body>
-</html>
+{% block cookie_message %}
+{% endblock %}
+
+
+{% block content %}
+  <main id="content" role="main" tabindex="-1">
+    {% block inner_content %}{% endblock %}
+  </main>
+{% endblock %}
+
+{% block footer_support_links %}
+
+{% endblock %}
+
+
+{% block body_end %}
+{% endblock %}

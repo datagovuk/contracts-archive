@@ -1,3 +1,5 @@
 venv
 instance
 __pycache__
+app.db
+*.pyc

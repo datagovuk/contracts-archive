@@ -1,137 +1,175 @@
 {% extends "layout.html" %}
-{% block body %}
-<h1>Data Download</h1>
 
-<p>This page contains the data behind the Contracts Finder Archive which can be downloaded in XML, CSV and SQLite database format.</p>
+{% block inner_content %}
 
-<p>Terms and conditions apply to the use of this data. See the bottom of this page for details.</p>
+<div class="grid-row">
+  <div class="column-full">
+    <h1 class="heading-large">Data Download</h1>
 
-<p>
-The current Contracts Finder site is available <a href="https://www.contractsfinder.service.gov.uk/Search">here</a>. Data from the current
-site is available in Open contracting Data standard format. For guidance on how to access this please click <a href="https://www.gov.uk/government/publications/open-contracting">here</a>
-</p>
+    <p>This page contains the data behind the Contracts Finder Archive which can be downloaded in XML, CSV and SQLite database format.</p>
 
-<div class="ui segment">
-  <h3>Database download</h3>
-  <p>An <a href="https://www.sqlite.org/">SQLite</a> database file of all of the contract information is available to download.</p>
-  <div class="ui list">
-    <a class="item" href="{{url_for('static', filename='files/contracts-finder-archive.db')}}">
-      <i class="icon database outline"></i>
-      <div class="content">Database of all contracts (90Mb)</div>
-    </a>
+    <p>Terms and conditions apply to the use of this data. See the bottom of this page for details.</p>
+
+    <p>The current Contracts Finder site is available <a href="https://www.contractsfinder.service.gov.uk/Search">here</a>. Data from the current
+    site is available in Open contracting Data standard format. For guidance on how to access this please click <a href="https://www.gov.uk/government/publications/open-contracting">here</a>
+    </p>
   </div>
 </div>
 
-<div class="ui segment">
-<h3>Activity summary and buyer group list</h3>
+<div class="grid-row">
+  <div class="column-full">
+    <h3 class="heading-medium">Database download</h3>
 
-<p>You can download three reports. The first provides a high-level view of procurement activity for all government departments and agencies that have published notices. It shows the total number of tender document summaries, contract document summaries and live opportunities published so far by each organisation.</p>
+    <p>An <a href="https://www.sqlite.org/">SQLite</a> database file of all of the contract information is available to download.
+    </p>
 
-<p>The second is a list of buyer groups registered on Contracts Finder is also available.</p>
+    <ul class="list">
+      <li>
+        <a href="{{url_for('static', filename='files/contracts-finder-archive.db')}}">
+            Database of all contracts (90Mb)</div>
+        </a>
+      </li>
+    </ul>
 
-<p>Thirdly, a list of the pipelines that government is currently aware of that could result in contract opportunities.</p>
-
-<p>They are in CSV format which can be opened as a spreadsheet or a simple text file.</p>
-
-<p><strong>They are no longer updated daily and contain the information present when the site was made read only.</strong></p>
-
-<div class="ui list">
-  <a class="item" href="{{url_for('static', filename='files/Summary_of_activity_by_department.csv')}}">
-    <i class="icon file excel outline"></i>
-    <div class="content">Summary of activity by department</div>
-  </a>
-  <a class="item" href="{{url_for('static', filename='files/List_of_buying_organisations.csv')}}">
-    <i class="icon file excel outline"></i>
-    <div class="content">List of buying organisations</div>
-  </a>
-  <a class="item" href="{{url_for('static', filename='files/List_of_current_pipelines.csv')}}">
-    <i class="icon file excel outline"></i>
-    <div class="content">List of current pipelines</div>
-  </a>
-</div>
-</div>
-<div class="ui segment">
-<h3>Detailed reports - recent notices</h3>
-
-<p>Detailed contract information is available in XML and CSV formats.</p>
-
-<p>The CSV version includes - for each notice - its title and brief description, the name of the buying organisation and the contract value. The machine-readable XML document contains additional data for each notice, including CPV codes.</p>
-
-<p><strong>They are no longer updated daily and contain the information present when the site was made read only.</strong></p>
-
-<div class="ui list">
-  <a class="item" href="{{url_for('static', filename='files/notices.xml')}}">
-    <i class="icon file code outline"></i>
-    <div class="content">Detailed report - recent notices (XML)</div>
-  </a>
-  <a class="item" href="{{url_for('static', filename='files/notices.csv')}}">
-    <i class="icon file excel outline"></i>
-    <div class="content">Detailed report - recent notices (CSV)</div>
-  </a>
-</div>
-</div>
-
-<div class="ui segment">
-<h3>Detailed reports - older notices</h3>
-<p>Each month a snapshot was taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
-<div class="ui celled list">
-  <div class="item">2015
-    <div class="ui list">
-  {% set year=2015 %}
-  {% set month=01 %}
-  {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
-  <a class="item" href="{{url_for('static', filename=filename)}}">
-    <i class="icon file excel outline"></i>
-    <div class="content">{{month|month}}-{{year}}</div>
-  </a>
-
-  {% set filename = 'files/notices_{0}_{1:02d}.xml'.format(year, month) %}
-  <a class="item" href="{{url_for('static', filename=filename)}}">
-    <i class="icon file code outline"></i>
-    <div class="content">{{month|month}}-{{year}}</div>
-  </a>
-  <span class="item"></span>
     </div>
   </div>
+</div>
 
-  {% for year in range(2014, 2010, -1) %}
-    <div class="item">{{year}}
-      <div class="list">
-    {% for month in range(12, 0, -1) %}
-    {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
-    <a class="item" href="{{url_for('static', filename=filename)}}">
-      <i class="icon file excel outline"></i>
-      <div class="content">{{month|month}}-{{year}}</div>
-    </a>
+<div class="grid-row">
+  <div class="column-full">
+    <h3 class="heading-medium">Activity summary and buyer group list</h3>
 
-    {% set filename = 'files/notices_{0}_{1:02d}.xml'.format(year, month) %}
-    <a class="item" href="{{url_for('static', filename=filename)}}">
-      <i class="icon file code outline"></i>
-      <div class="content">{{month|month}}-{{year}}</div>
-    </a>
-    <span class="item"></span>
+    <p>You can download three reports. The first provides a high-level view of procurement activity for all government departments and agencies that have published notices. It shows the total number of tender document summaries, contract document summaries and live opportunities published so far by each organisation.
+    </p>
+
+    <p>The second is a list of buyer groups registered on Contracts Finder is also available.
+    </p>
+
+    <p>Thirdly, a list of the pipelines that government is currently aware of that could result in contract opportunities.
+    </p>
+
+    <p>They are in CSV format which can be opened as a spreadsheet or a simple text file.
+    </p>
+
+    <p class="bold-small">
+      They are no longer updated daily and contain the information present when the site was made read only.
+    </p>
+
+    <ul>
+      <li>
+        <a href="{{url_for('static', filename='files/Summary_of_activity_by_department.csv')}}">
+          Summary of activity by department
+        </a>
+      </li>
+      <li>
+        <a href="{{url_for('static', filename='files/List_of_buying_organisations.csv')}}">
+          List of buying organisations
+        </a>
+      </li>
+        <a href="{{url_for('static', filename='files/List_of_current_pipelines.csv')}}">
+          List of current pipelines
+        </a>
+      <li>
+    </ul>
+
+  </div>
+</div>
+
+
+<div class="grid-row">
+  <div class="column-full">
+    <h3 class="heading-medium">Detailed reports - recent notices</h3>
+
+    <p>Detailed contract information is available in XML and CSV formats.</p>
+
+    <p>The CSV version includes - for each notice - its title and brief description, the name of the buying organisation and the contract value. The machine-readable XML document contains additional data for each notice, including CPV codes.</p>
+
+    <p class="bold-small">They are no longer updated daily and contain the information present when the site was made read only.</p>
+
+    <ul class="list">
+      <li>
+        <a href="{{url_for('static', filename='files/notices.xml')}}">
+          Detailed report - recent notices (XML)
+        </a>
+      </li>
+      <li>
+        <a href="{{url_for('static', filename='files/notices.csv')}}">
+          Detailed report - recent notices (CSV)
+        </a>
+      </li>
+    </ul>
+
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-full">
+    <h3 class="heading-medium">Detailed reports - older notices</h3>
+
+    <p>Each month a snapshot was taken of the recent notices, and published in the list below.  They are in XML and CSV format and contain the information in the same form as the recent notices data.</p>
+
+    <h2 class="heading-small">2015</h2>
+    <ul class="list">
+      {% set year=2015 %}
+      {% set month=01 %}
+      {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
+      <li>
+        <a href="{{url_for('static', filename=filename)}}">
+          {{month|month}}-{{year}}.csv
+        </a>
+      </li>
+
+      {% set filename = 'files/notices_{0}_{1:02d}.xml'.format(year, month) %}
+      <li>
+        <a href="{{url_for('static', filename=filename)}}">
+          {{month|month}}-{{year}}.xml
+        </a>
+      </li>
+    </ul>
+
+    {% for year in range(2014, 2010, -1) %}
+      <h2 class="heading-small">{{year}}</h2>
+      <ul class="list">
+        {% for month in range(12, 0, -1) %}
+        {% set filename = 'files/notices_{0}_{1:02d}.csv'.format(year, month) %}
+        <li>
+          <a href="{{url_for('static', filename=filename)}}">
+          {{month|month}}-{{year}}.csv
+          </a>
+        </li>
+        <li>
+          {% set filename = 'files/notices_{0}_{1:02d}.xml'.format(year, month) %}
+          <a href="{{url_for('static', filename=filename)}}">
+          {{month|month}}-{{year}}.xml
+          </a>
+        </li>
+        <li><br/></li>
+        {% endfor %}
+      </ul>
     {% endfor %}
-      </div>
-    </div>
-  {% endfor %}
+  </div>
+
+  </div>
 </div>
-</div>
 
-<div class="ui segment">
-<h3>Terms and conditions</h3>
+<div class="grid-row">
+  <div class="column-full">
 
-<p>The data published is Crown copyright unless it is marked as third party copyright.  Where the data is Crown copyright it will be assumed to be available under the terms of the Open Government Licence (OGL) unless it is marked as either:</p>
+    <h3 class="heading-medium">Terms and conditions</h3>
 
-<ul>
-  <li>Value added material</li>
-  <li>Material licensed by a Crown organisation under a delegation from the Controller of HM Stationery Office (HMSO)</li>
-</ul>
+    <p>The data published is Crown copyright unless it is marked as third party copyright.  Where the data is Crown copyright it will be assumed to be available under the terms of the Open Government Licence (OGL) unless it is marked as either:</p>
 
-<p>You can use Crown Copyright data available under the OGL in your own information applications so long as you comply with the standard OGL terms and conditions. If the Crown copyright data is not available under the OGL you must comply with the licence terms and condition which are identified as being applicable to that data.</p>
+    <ul>
+      <li>Value added material</li>
+      <li>Material licensed by a Crown organisation under a delegation from the Controller of HM Stationery Office (HMSO)</li>
+    </ul>
 
-<p>If the data published is marked as third party copyright you have no right to copy or reuse that data without first seeking permission from the copyright owner.</p>
+    <p>You can use Crown Copyright data available under the OGL in your own information applications so long as you comply with the standard OGL terms and conditions. If the Crown copyright data is not available under the OGL you must comply with the licence terms and condition which are identified as being applicable to that data.</p>
 
-<p><a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">OGL terms and conditions (National Archives website)</a></p>
+    <p>If the data published is marked as third party copyright you have no right to copy or reuse that data without first seeking permission from the copyright owner.</p>
+
+    <p><a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">OGL terms and conditions (National Archives website)</a></p>
+  </div>
 </div>
 
 

@@ -1,57 +1,52 @@
 {% extends "layout.html" %}
-{% block body %}
-<h1>{{contract.details.title}}</h1>
 
-{% if contract.status == 0 %} {# Archived contract e.g. 414447 #}
-<div class="ui success icon message">
-  <i class="info icon big"></i>
-  <div class="content">
-    <div class="header">
-      The buying process is complete
+
+{% macro header_block(heading, label) -%}
+<div class="grid-row">
+  <div class="column-full">
+    <div class="govuk-box-highlight" style="padding-top: 10px;">
+      <h2 class="heading-large">
+        {{heading}}
+      </h2>
+      {% if label %}
+      <p>{{label}}</p>
+      {% endif %}
     </div>
-    <p>The buyer is publishing the contract documentation to meet the government transparency commitments.</p>
   </div>
 </div>
-{% endif %}
+{%- endmacro %}
+
+
+{% block inner_content %}
+
+<div class="grid-row">
+  <div class="column-full">
+    <h1 class="heading-large">{{contract.details.title}}</h1>
+
+    {% if contract.status == 0 %} {# Archived contract e.g. 414447 #}
+
+      {{ header_block("The buying process is complete",
+      "The buyer is publishing the contract documentation to meet the government transparency commitments.")
+    }}
+
+    {% endif %}
 
 {% if contract.status == 5 %} {# Replaced contract e.g. 720122 #}
-<div class="ui success icon message">
-  <i class="info icon big"></i>
-  <div class="content">
-    <div class="header">
-      This notice has been replaced
-    </div>
-    <p>Please see the related notices for the replacement notice.</p>
-    <p>Reason: </p>
-  </div>
-</div>
+    {{ header_block("This notice has been replaced",
+        "Please see the related notices for the replacement notice.")}}
 {% endif %}
 
 {% if contract.status == 6 %} {# Replaced contract e.g. 684496 #}
-<div class="ui success icon message">
-  <i class="info icon big"></i>
-  <div class="content">
-    <div class="header">
-      This notice has been withdrawn
-    </div>
-    <p>Reason: </p>
-  </div>
-</div>
+    {{ header_block("This notice has been withdrawn",
+        "")}}
 {% endif %}
 
 {% if contract.status == 7 %} {# Replaced contract e.g. 1704046 #}
-<div class="ui success icon message">
-  <i class="info icon big"></i>
-  <div class="content">
-    <div class="header">
-      This notice is pending replacement
-    </div>
-    <p>Reason: </p>
-  </div>
-</div>
+    {{ header_block("This notice is pending replacement",
+        "")}}
 {% endif %}
 
-<table class="ui definition celled table">
+<table class="table">
   {% if contract.date_created %}
   <tr>
     <td>Created on</td><td>{{contract.date_created.strftime('%d/%m/%Y')}}</td>
@@ -111,116 +106,143 @@
   </tr>
 </table>
 
-<h2>Description of the contract</h2>
-<p>{{contract.details.description|d('No description was provided', True)|safe}}</p>
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-full">
+    <h2 class="heading-medium">Description of the contract</h2>
+    <p>{{contract.details.description|d('No description was provided', True)|nl2br|safe}}</p>
+  </div>
+</div>
 
 {% if contract.documents.count() > 0 %}
-<h2>Documents</h2>
-<div class="ui list">
-    {% for doc in contract.documents %}
-    <a class="item" href="{{url_for('download', notice_id=contract.id, file_id=doc.file_id)}}">
-      <i class="file outline icon"></i>
-      <div class="content">
-        <div class="header">{{doc.title}}</div>
-        <div class="description">({{doc.filename}})</div>
-      </div>
-    </a>
-    {% endfor %}
+<div class="grid-row">
+  <div class="column-full">
+    <h2 class="heading-medium">Documents</h2>
+
+    <ul class="list">
+        {% for doc in contract.documents %}
+        <li>
+          <a href="{{url_for('download', notice_id=contract.id, file_id=doc.file_id)}}">
+            <div class="content">
+              <div class="header">{{doc.title}}</div>
+              <div class="description">({{doc.filename}})</div>
+            </div>
+          </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-full">
+    <h2 class="heading-medium">Additional information</h2>
+
+    <table class="table">
+      <tr>
+        <td>Additional Notes</td><td>{{contract.details.supplier_instructions|d('N/A', True)}}</td>
+      </tr>
+      <tr>
+        <td>Is it a framework agreement?</td><td>{% if contract.is_framework %}Yes{% else %}No{% endif%}</td>
+      </tr>
+    {% if contract.date_awarded %}
+      <tr>
+        <td>Awarded on</td><td>{{contract.date_awarded.strftime('%d/%m/%Y')}}</td>
+      </tr>
+      <tr>
+        <td>Awarded value</td><td>{{contract.max_value|currency}}</td>
+      </tr>
+    {% endif %}
+    </table>
+  </div>
+</div>
+
+{% if contract.awards %}
+<div class="grid-row">
+  <div class="column-full">
+    <h2>Awarded suppliers</h2>
+    <table class="table">
+      <thead>
+        <tr><th>Name</th><th>Address</th></tr>
+      </thead>
+      <tbody>
+        {% for award in contract.awards if award.details.business_name %}
+    <tr>
+        <td>{{award.details.business_name}} <a href="{{url_for('search')}}?business_name={{award.details.business_name|urlencode}}">(see other contracts awarded to this supplier)<a/></td>
+        <td>{{award.details.business_address}}</td>
+    </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endif %}
 
-<h2>Additional information</h2>
-<table class="ui definition celled table">
-  <tr>
-    <td>Additional Notes</td><td>{{contract.details.supplier_instructions|d('N/A', True)}}</td>
-  </tr>
-  <tr>
-    <td>Is it a framework agreement?</td><td>{% if contract.is_framework %}Yes{% else %}No{% endif%}</td>
-  </tr>
-{% if contract.date_awarded %}
-  <tr>
-    <td>Awarded on</td><td>{{contract.date_awarded.strftime('%d/%m/%Y')}}</td>
-  </tr>
-  <tr>
-    <td>Awarded value</td><td>{{contract.max_value|currency}}</td>
-  </tr>
-{% endif %}
-</table>
+<div class="grid-row">
+  <div class="column-full">
+    <h2 class="heading-medium">Who to contact</h2>
 
-{% if contract.awards %}
-<h2>Awarded suppliers</h2>
-<table class="ui celled table">
-  <thead>
-    <tr><th>Name</th><th>Address</th></tr>
-  </thead>
-  <tbody>
-    {% for award in contract.awards if award.details.business_name %}
-<tr>
-    <td>{{award.details.business_name}} <a href="{{url_for('search')}}?business_name={{award.details.business_name|urlencode}}">(see other contracts awarded to this supplier)<a/></td>
-    <td>{{award.details.business_address}}</td>
-</tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endif %}
+    <table class="table">
+    {% if contract.details.contact_name %}
+      <tr>
+        <td>Contact name</td>
+        <td>
+          {{contract.details.contact_name}}
+        </td>
+      </tr>
+    {% endif %}
 
-<h2>Who to contact</h2>
-<table class="ui definition celled table">
-{% if contract.details.contact_name %}
-  <tr>
-    <td>Contact name</td>
-    <td>
-      {{contract.details.contact_name}}
-    </td>
-  </tr>
-{% endif %}
+    {% if contract.details.contact_email %}
+      <tr>
+        <td>Email</td>
+        <td>
+          <a href="mailto:{{contract.details.contact_email}}">{{contract.details.contact_email}}</a>
+        </td>
+      </tr>
+    {% endif %}
 
-{% if contract.details.contact_email %}
-  <tr>
-    <td>Email</td>
-    <td>
-      <a href="mailto:{{contract.details.contact_email}}">{{contract.details.contact_email}}</a>
-    </td>
-  </tr>
-{% endif %}
+    {% if contract.details.contact_address %}
+      <tr>
+        <td>Address</td>
+        <td>
+          {{contract.details.contact_address}}
+        </td>
+      </tr>
+    {% endif %}
 
-{% if contract.details.contact_address %}
-  <tr>
-    <td>Address</td>
-    <td>
-      {{contract.details.contact_address}}
-    </td>
-  </tr>
-{% endif %}
+    {% if contract.details.contact_tel %}
+      <tr>
+        <td>Telephone</td>
+        <td>
+          {{contract.details.contact_tel}}
+          {% if contract.details.contact_extension %}
+          (extension: {{contract.details.contact_extension}})
+          {% endif %}
+        </td>
+      </tr>
+    {% endif %}
 
-{% if contract.details.contact_tel %}
-  <tr>
-    <td>Telephone</td>
-    <td>
-      {{contract.details.contact_tel}} 
-      {% if contract.details.contact_extension %}
-      (extension: {{contract.details.contact_extension}})
-      {% endif %}
-    </td>
-  </tr>
-{% endif %}
+    {% if contract.details.contact_fax %}
+      <tr>
+        <td>Fax</td>
+        <td>
+          {{contract.details.contact_fax}}
+        </td>
+      </tr>
+    {% endif %}
 
-{% if contract.details.contact_fax %}
-  <tr>
-    <td>Fax</td>
-    <td>
-      {{contract.details.contact_fax}}
-    </td>
-  </tr>
-{% endif %}
-
-{% if contract.details.contact_web %}
-  <tr>
-    <td>Web address</td>
-    <td>
-      <a href="{{contract.details.contact_web|external_link}}">{{contract.details.contact_web}}</a>
-    </td>
-  </tr>
-{% endif %}
-</table>
+    {% if contract.details.contact_web %}
+      <tr>
+        <td>Web address</td>
+        <td>
+          <a href="{{contract.details.contact_web|external_link}}">{{contract.details.contact_web}}</a>
+        </td>
+      </tr>
+    {% endif %}
+    </table>
+  </div>
+</div>
 {% endblock %}

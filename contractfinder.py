@@ -15,6 +15,11 @@ import collections
 
 from regions import regions_mapping
 
+# For nl2br
+import re
+from jinja2 import evalcontextfilter, Markup, escape
+_paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_envvar('SETTINGS')
@@ -238,7 +243,7 @@ def download(notice_id, file_id):
     notice_id = str(notice_id)
 
     download_file = NoticeDocument.query.filter_by(file_id=file_id).first_or_404()
-    
+
     directory = os.path.abspath(os.path.join(app.instance_path, 'documents', notice_id))
     filename = download_file.filename.encode('latin1', 'ignore')
     mimetype = download_file.mimetype
@@ -293,6 +298,16 @@ def sort_bucket(bucket):
         )
     return sorted(bucket, cmp=case_insensitive_cmp)
 
+@app.template_filter()
+@evalcontextfilter
+def nl2br(eval_ctx, value):
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
+        for p in _paragraph_re.split(escape(value)))
+    if eval_ctx.autoescape:
+        result = Markup(result)
+    return result
+
+
 if __name__ == '__main__':
-    app.debug = False
+    app.debug = True
     app.run()

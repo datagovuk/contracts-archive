@@ -1,72 +1,79 @@
 {% extends "layout.html" %}
-{% block body %}
-<form action="{{url_for('search')}}" id="search-form">
-  <div class="ui action left icon input">
-    <i class="search icon"></i>
-    {% set querystring = request.args.get('query') or request.args.get('q') %}
-    {% if querystring %}
-    <input name="query" type="text" value="{{querystring}}">
-    {% else %}
-    <input name="query" type="text" placeholder="Enter keywords here">
-    {% endif %}
-    <button class="ui green button">Search Contracts</button>
+
+{% block inner_content %}
+
+<div class="grid-row">
+  <div class="column-full">
+    <div class="govuk-box-highlight">
+      <h2 class="heading-xlarge">
+      WARNING: This is archived data
+      </h2>
+    </div>
   </div>
-  <a id="showall" class="ui green button" href="{{url_for('contracts')}}">Show All Contracts</a>
-</form>
-
-<h2>WELCOME TO THE CONTRACTS FINDER ARCHIVE</h2>
-<div class="ui inverted segment">
-  <p>WARNING: This is archived data.</p>
 </div>
-<p>This site is a read only archive of historic contract data from the Business Link Contracts Finder website that closed in February 2015.</p>
 
-<p>This site includes public sector contract tenders and contracts awarded between 11/2/2011 and 25/2/2015.</p>
+<div class="grid-row">
+  <div class="column-full">
+    <h1 class="heading-large">Contracts Finder Archive</h1>
 
-<p>The site was superseded by a new <a href="https://www.gov.uk/contracts-finder">Contracts Finder (https://www.gov.uk/contracts-finder)</a> designed and operated by the Crown Commercial Service.
-Data from the current site is available in Open contracting Data standard format. For guidance on how to
-access this please click <a href="https://www.gov.uk/government/publications/open-contracting">here</a>.
-</p>
+    <form action="{{url_for('search')}}" id="search-form">
+        {% set querystring = request.args.get('query') or request.args.get('q') %}
+        {% if querystring %}
+          <input class="form-control" type="text" name="query" value="{{querystring}}">
+        {% else %}
+          <input class="form-control" type="text" name="query" placeholder="Enter keywords here">
 
-<p>Central government departments and its agencies were required to advertise contracts over &pound;10k on Contracts Finder (and this continues with the new Contract Finder). In addition the wider public sector were able to advertise contracts on there too, but weren't required (although on the new Contracts Finder they are required to on contracts over &pound;25k).</p>
-
-<p>This data will not be updated and does not contain contracts which have been awarded since 26/2/2015. There was no batched copying of data from the old site to the new site, but there may have been transfers on a case-by-case basis.</p>
-
-<p>This archive has been provided by the <a href="http://data.gov.uk/">data.gov.uk</a> team using data from the Crown Commercial Service.</p>
-
-<h2>Suggested Searches</h2>
-
-<div class="ui horizontal list massive">
-    <a class="item" href="{{url_for('search')}}?query=construction">
-      <i class="black building outline icon"></i>
-      <div class="content">
-        Construction
+        {% endif %}
+        <input class="button" type="submit" value="Search contracts">
+        <a href="contracts">Show all contracts</a>
       </div>
-    </a>
-    <a class="item" href="{{url_for('search')}}?query=cleaning">
-      <i class="black home icon"></i>
-      <div class="content">
-        Cleaning
-      </div>
-    </a>
-    <a class="item" href="{{url_for('search')}}?query=security">
-      <i class="black lock icon"></i>
-      <div class="content">
-        Security
-      </div>
-    </a>
-    <a class="item" href="{{url_for('search')}}?query=research">
-      <i class="black lab icon"></i>
-      <div class="content">
-        Research
-      </div>
-    </a>
-    <a class="item" href="{{url_for('search')}}?query=training">
-      <i class="black student icon"></i>
-      <div class="content">
-        Training
-      </div>
-    </a>
+    </form>
+  </div>
 </div>
-<h2>Data Download</h2>
+
+<div class="grid-row">
+  <div class="column-full">
+    <br/>
+    <p>This site is a read only archive of historic contract data from the Business Link Contracts Finder website that closed in February 2015.</p>
+
+    <p>This site includes public sector contract tenders and contracts awarded between 11/2/2011 and 25/2/2015.</p>
+
+    <p>The site was superseded by a new <a href="https://www.gov.uk/contracts-finder">Contracts Finder (https://www.gov.uk/contracts-finder)</a> designed and operated by the Crown Commercial Service.
+    Data from the current site is available in Open contracting Data standard format. For guidance on how to
+    access this please click <a href="https://www.gov.uk/government/publications/open-contracting">here</a>.
+    </p>
+
+    <p>Central government departments and its agencies were required to advertise contracts over &pound;10k on Contracts Finder (and this continues with the new Contract Finder). In addition the wider public sector were able to advertise contracts on there too, but weren't required (although on the new Contracts Finder they are required to on contracts over &pound;25k).</p>
+
+    <p>This data will not be updated and does not contain contracts which have been awarded since 26/2/2015. There was no batched copying of data from the old site to the new site, but there may have been transfers on a case-by-case basis.</p>
+
+    <p>This archive has been provided by the <a href="http://data.gov.uk/">data.gov.uk</a> team using data from the Crown Commercial Service.</p>
+
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-full">
+    <h2 class="heading-medium">Suggested Searches</h2>
+
+    <a href="{{url_for('search')}}?query=construction">Construction</a>
+    &nbsp;&nbsp;
+    <a href="{{url_for('search')}}?query=cleaning">Cleaning</a>
+    &nbsp;&nbsp;
+    <a href="{{url_for('search')}}?query=security">Security</a>
+    &nbsp;&nbsp;
+    <a href="{{url_for('search')}}?query=research">Research</a>
+    &nbsp;&nbsp;
+    <a href="{{url_for('search')}}?query=training">Training</a>
+
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-full">
+
+<h2 class="heading-medium">Data Download</h2>
 <p>Click <a href="{{url_for('data_feeds')}}">here</a> for the data behind the Contracts Finder Archive which can be downloaded in XML, CSV or SQLite database format.</p>
+  </div>
+</div>
 {% endblock %}

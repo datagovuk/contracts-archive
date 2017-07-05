@@ -1,229 +1,187 @@
 {% extends "layout.html" %}
 
-{% block extra_head %}
-<link rel="stylesheet" type="text/css" href="//data.gov.uk/css/jquery-ui-1.9.2.custom.datepicker.min.css" />
-<script type="text/javascript" src="//data.gov.uk/scripts/vendor/jquery-ui-1.9.2.custom.datepicker.min.js"></script>
+{% block inner_content %}
 
-<script type="text/javascript">
-  $(function() {
-      $(".chosen-select").chosen({allow_single_deselect: true});
-      $('.needs-datepicker').datepicker({dateFormat:'yy-mm-dd'});
-      $('.disable').attr('disabled','disabled');
-      $('.remove.circle.link.icon').css('display', 'block').click(function(){
-          $(this).siblings('input').val('');
-          $('form').submit();
-      });
-  });
-</script>
-{% endblock %}
 
-{% block body %}
-<h1>Search Results</h1>
-{% if total == 1 %}
-  <p>We found 1 result</p>
-{% else %}
-  <p>We found {{total}} results</p>
-{% endif %}
-
-<div class="ui two column stackable grid">
-    <div class="four wide column">
-        <div id="search-menu" class="ui vertical menu">
-            <form method="GET" action="{{url_for('search')}}">
-            {% set querystring = request.args.get('query') or request.args.get('q') or '' %}
-            <div class="item">
-                <div class="header">Keywords</div>
-                <div class="ui input">
-                    <input type="text" name="query" value="{{querystring}}">
-                </div>
-            </div>
-            <div class="item">
-                <div class="header">Sort By</div>
-                {% if querystring %}
-                  {% set default_sort = 'relevance' %}
-                {% else %}
-                  {% set default_sort = 'pub_date_desc' %}
-                {% endif %}
-                <select class="chosen-select" name="sort_by">
-                {% for key, value in sort.items() %}
-                  {% if request.args.get('sort_by', default_sort) == key %}
-                  <option value="{{key}}" selected>{{value.title}}</option>
-                  {% else %}
-                  <option value="{{key}}">{{value.title}}</option>
-                  {% endif %}
-                {% endfor %}
-                </select>
-            </div>
-        {% if request.args.buying_org %}
-            <div class="item">
-                <div class="header">Buying organisation</div>
-                <div class="ui icon input">
-                    <input class="disable" type="text" name="buying_org" value="{{request.args.buying_org}}">
-                    <i class="remove circle link icon" style="display: none;"></i>
-                </div>
-            </div>
-        {% endif %}
-        {% if request.args.business_name %}
-            <div class="item">
-                <div class="header">Awarded Supplier</div>
-                <div class="ui icon input">
-                    <input class="disable" type="text" name="business_name" value="{{request.args.business_name}}">
-                    <i class="remove circle link icon"></i>
-                </div>
-            </div>
-        {% endif %}
-        {% for name in facets %}
-          {% with agg = facets[name] %}
-            <div class="item">
-                <div class="header">{{agg.title}}</div>
-                <select class="chosen-select" name="{{name}}">
-                  <option value=""></option>
-                {% for opt in agg.buckets|sort_bucket %}
-                  {% if request.args[name] == opt.key %}
-                    <option value="{{opt.key}}" selected>{{opt.key}}</option>
-                  {% else %}
-                    <option value="{{opt.key}}">{{opt.key}}</option>
-                  {% endif %}
-                {% endfor %}
-                </select>
-            </div>
-          {% endwith %}
-        {% endfor %}
-            <div class="item">
-                <div class="header">Minimum Contract Value (&pound;)</div>
-                <div class="ui input">
-                    <input type="number" name="min_value" value="{{request.args.min_value}}"></input>
-                </div>
-            </div>
-            <div class="item">
-                <div class="header">Maximum Contract Value (&pound;)</div>
-                <div class="ui input">
-                    <input type="number" name="max_value" value="{{request.args.max_value}}"></input>
-                </div>
-            </div>
-            <div class="item">
-                <div class="header">Publication Date</div>
-                <p>From</p>
-                <div class="ui input">
-                    <input type="text" name="publication_date_from" value="{{request.args.publication_date_from}}" class="needs-datepicker"></input>
-                </div>
-                <p>To</p>
-                <div class="ui input">
-                    <input type="text" name="publication_date_to" value="{{request.args.publication_date_to}}" class="needs-datepicker"></input>
-                </div>
-            </div>
-            <div class="item">
-                <div class="header">Deadline Date</div>
-                <p>From<p>
-                <div class="ui input">
-                    <input type="text" name="deadline_date_from" value="{{request.args.deadline_date_from}}" class="needs-datepicker"></input>
-                </div>
-                <p>To</p>
-                <div class="ui input">
-                    <input type="text" name="deadline_date_to" value="{{request.args.deadline_date_to}}" class="needs-datepicker"></input>
-                </div>
-            </div>
-            <div class="item">
-                <div class="header">Awarded Date</div>
-                <p>From<p>
-                <div class="ui input">
-                    <input type="text" name="award_date_from" value="{{request.args.award_date_from}}" class="needs-datepicker"></input>
-                </div>
-                <p>To</p>
-                <div class="ui input">
-                    <input type="text" name="award_date_to" value="{{request.args.award_date_to}}" class="needs-datepicker"></input>
-                </div>
-            </div>
-          <div class="item">
-              <button class="ui green button">Update results</button>
-          </div>
-        </form>
-        </div>
-    </div>
-    <div class="twelve wide column">
-
-<table class="ui table celled striped">
-    <thead>
-        <tr>
-            <th>Contract</th>
-            <th>Location</th>
-            <th>Value</th>
-            <th>Type</th>
-            <th>Publication Date</th>
-        {% if request.args.get('sort_by') in ['deadline_date', 'deadline_date_desc'] %}
-            <th>Deadline Date</th>
-        {% endif %}
-        {% if request.args.get('sort_by') in ['award_date', 'award_date_desc'] %}
-            <th>Award Date</th>
-        {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-    {% for contract in contracts %}
-    <tr>
-      <td>
-        <a href="{{url_for('contract', notice_id=contract.id)}}">{{contract.details.title}}</a>
-        <p>{{contract.details.description|d('No description was provided', True)|truncate(1000)|safe}}</p>
-      </td>
-      <td style="text-align:center">{{contract.location.name}}</td>
-      <td style="text-align:center">
-      {{contract.min_value|currency}}
-      {% if contract.min_value != contract.max_value %}
-      <br/>
-      <i class="icon chevron down"></i>
-      <br/>
-      {{contract.max_value|currency}}
-      {% endif %}
-      </td>
-      <td style="text-align:center">{{contract.type}}</td>
-
-      {% if contract.date_created %}
-      <td style="text-align:center">{{contract.date_created.strftime('%d/%m/%Y')}}</td>
-      {% else %}
-      <td style="text-align:center">&nbsp;</td>
-      {% endif %}
-
-      {% if request.args.get('sort_by') in ['deadline_date', 'deadline_date_desc'] %}
-        {% if contract.deadline_date %}
-          <td style="text-align:center">{{contract.deadline_date.strftime('%d/%m/%Y')}}</td>
-        {% else %}
-          <td style="text-align:center">&nbsp;</td>
-        {% endif %}
-      {% endif %}
-
-      {% if request.args.get('sort_by') in ['award_date', 'award_date_desc'] %}
-        {% if contract.date_awarded %}
-          <td style="text-align:center">{{contract.date_awarded.strftime('%d/%m/%Y')}}</td>
-        {% else %}
-          <td style="text-align:center">&nbsp;</td>
-        {% endif %}
-      {% endif %}
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<div class="ui segment">
-  <div id="pagenumber">Page {{page}} of {{total_pages}}</div>
-  <div class="ui pagination menu">
-    {% if prevlink %}
-    <a class="icon item" href="{{prevlink}}">
+<div class="grid-row">
+  <div class="column-full">
+    <h1 class="heading-large">Search Results</h1>
+    {% if total == 1 %}
+      <p>We found 1 result</p>
     {% else %}
-    <a class="icon item disabled">
+      <p>We found {{total}} results</p>
     {% endif %}
-      <i class="left arrow icon"></i>
+  </div>
+</div>
+
+<div class="grid-row">
+  <div class="column-one-third">
+    {% set querystring = request.args.get('query') or request.args.get('q') or '' %}
+
+    <form method="GET" action="{{url_for('search')}}">
+      <div class="form-group">
+        <label class="form-label" for="query">Keywords</label>
+        <input type="text" class="form-control" name="query" value="{{querystring}}">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="sort_by">Sort By</label>
+        {% if querystring %}
+          {% set default_sort = 'relevance' %}
+        {% else %}
+          {% set default_sort = 'pub_date_desc' %}
+        {% endif %}
+        <select class="form-control" name="sort_by">
+        {% for key, value in sort.items() %}
+          {% if request.args.get('sort_by', default_sort) == key %}
+          <option value="{{key}}" selected>{{value.title}}</option>
+          {% else %}
+          <option value="{{key}}">{{value.title}}</option>
+          {% endif %}
+        {% endfor %}
+        </select>
+      </div>
+
+      {% if request.args.buying_org %}
+        <div class="form-group">
+          <label class="form-label" for="full-name-f1">Buying organisation</label>
+          <input class="disable form-control" type="text" name="buying_org" value="{{request.args.buying_org}}">
+          <i class="remove circle link icon" style="display: none;"></i>
+        </div>
+      {% endif %}
+      {% if request.args.business_name %}
+        <div class="form-group">
+            <label class="form-label" for="full-name-f1">Awarded Supplier</label>
+            <input class="disable form-control" type="text" name="business_name" value="{{request.args.business_name}}">
+            <i class="remove circle link icon"></i>
+        </div>
+      {% endif %}
+      {% for name in facets %}
+        {% with agg = facets[name] %}
+          <div class="form-group">
+              <label class="form-label" for="{{name}}">{{agg.title}}</label>
+              <select class="form-control" name="{{name}}">
+                <option value=""></option>
+              {% for opt in agg.buckets|sort_bucket %}
+                {% if request.args[name] == opt.key %}
+                  <option value="{{opt.key}}" selected>{{opt.key}}</option>
+                {% else %}
+                  <option value="{{opt.key}}">{{opt.key}}</option>
+                {% endif %}
+              {% endfor %}
+              </select>
+          </div>
+        {% endwith %}
+      {% endfor %}
+      <div class="form-group">
+          <label class="form-label" for="min_value">Minimum Contract Value (&pound;)</label>
+          <input type="number" class="form-control" name="min_value" value="{{request.args.min_value}}"></input>
+      </div>
+      <div class="form-group">
+          <label class="form-label" for="max_value">Maximum Contract Value (&pound;)</label>
+          <input type="number" class="form-control" name="max_value" value="{{request.args.max_value}}"></input>
+      </div>
+      <div class="form-group">
+          <label class="form-label" for="publication_date_from">Publication Date</label>
+          <p>From</p>
+          <input type="text" name="publication_date_from" value="{{request.args.publication_date_from}}" class="form-control needs-datepicker"></input>
+          <p>To</p>
+          <input type="text" name="publication_date_to" value="{{request.args.publication_date_to}}" class="form-control needs-datepicker"></input>
+      </div>
+      <div class="form-group">
+          <label class="form-label" for="deadline_date_from">Deadline Date</label>
+          <p>From<p>
+          <input type="text" name="deadline_date_from" value="{{request.args.deadline_date_from}}" class="form-control needs-datepicker"></input>
+          <p>To</p>
+          <input type="text" name="deadline_date_to" value="{{request.args.deadline_date_to}}" class="form-control needs-datepicker"></input>
+      </div>
+      <div class="form-group">
+          <label class="form-label" for="award_date_from">Awarded Date</label>
+          <p>From<p>
+          <input type="text" name="award_date_from" value="{{request.args.award_date_from}}" class="form-control needs-datepicker"></input>
+          <p>To</p>
+          <input type="text" name="award_date_to" value="{{request.args.award_date_to}}" class="form-control needs-datepicker"></input>
+      </div>
+      <div class="form-group">
+        <input type="submit" class="button" value="Update results">
+      </div>
+    </form>
+  </div>
+
+<div class="column-two-thirds">
+
+  {% for contract in contracts %}
+    <div>
+        <h2 class="heading-small">
+          <a href="{{url_for('contract', notice_id=contract.id)}}">{{contract.details.title}}</a>
+        </h2>
+
+        <dl class="metadata">
+          <dt>Type:</dt>
+          <dd>{{contract.type}}</dd>
+          <dt>Location:</dt>
+          <dd>
+            {% if contract.location %}
+              {{contract.location.name}}
+            {% else %}
+              Not specified
+            {% endif %}
+          </dd>
+          <dt>Value:</dt>
+          <dd>
+            {{contract.min_value|currency}}
+            {% if contract.min_value != contract.max_value %}
+              - {{contract.max_value|currency}}
+            {% endif %}
+          </dd>
+          {% if request.args.get('sort_by') in ['deadline_date', 'deadline_date_desc'] %}
+              <dt>Deadline Date:</dt>
+          {% endif %}
+          {% if request.args.get('sort_by') in ['award_date', 'award_date_desc'] %}
+              <dt>Award Date</dt>
+          {% endif %}
+        </dl>
+        <p>{{contract.details.description|d('No description was provided', True)|truncate(200)|safe}}</p>
+    </div>
+  {% endfor %}
+
+  <div id="pagenumber">Page {{page}} of {{total_pages}}</div>
+
+    {% if prevlink %}
+      <a class="icon item" href="{{prevlink}}">
+    {% else %}
+      <a class="icon item disabled">
+    {% endif %}
       Previous
     </a>
     {% if nextlink %}
-    <a class="icon item" href="{{nextlink}}">
+      <a href="{{nextlink}}">
     {% else %}
-    <a class="icon item disabled">
+      <a class="disabled">
     {% endif %}
       Next
-      <i class="right arrow icon"></i>
     </a>
   </div>
+
 </div>
 </div>
 </div>
 
+{% endblock %}
+
+{% block extra_head %}
+
+  <link rel="stylesheet" type="text/css" href="//data.gov.uk/css/jquery-ui-1.9.2.custom.datepicker.min.css" />
+  <script type="text/javascript" src="//data.gov.uk/scripts/vendor/jquery-ui-1.9.2.custom.datepicker.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+        $(".chosen-select").chosen({allow_single_deselect: true});
+        $('.needs-datepicker').datepicker({dateFormat:'yy-mm-dd'});
+        $('.disable').attr('disabled','disabled');
+        $('.remove.circle.link.icon').css('display', 'block').click(function(){
+            $(this).siblings('input').val('');
+            $('form').submit();
+        });
+    });
+  </script>
 {% endblock %}
