@@ -18,7 +18,7 @@ def redact_documents_command(args):
 
     if not contracts_and_documents:
         raise Exception('No contracts provided')
-    print '%s contracts / documents provided' % len(contracts_and_documents)
+    print('%s contracts / documents provided' % len(contracts_and_documents))
 
     errors = []
 
@@ -26,7 +26,7 @@ def redact_documents_command(args):
                                                errors,
                                                args.document_path)
 
-    print '%s documents' % len(documents)
+    print('%s documents' % len(documents))
 
     print_document_urls(documents)
 
@@ -35,12 +35,12 @@ def redact_documents_command(args):
                      write=args.write)
 
     if errors:
-        print '\nNB There were %s errors:' % len(errors)
+        print('\nNB There were %s errors:' % len(errors))
         for err in errors:
-            print err
-        print '\nFinished with errors'
+            print(err)
+        print('\nFinished with errors')
     else:
-        print 'Finished'
+        print('Finished')
 
 def extract_contracts_and_documents_from_file(filename, verbose=False):
     with open(filename, 'rb') as f:
@@ -49,13 +49,13 @@ def extract_contracts_and_documents_from_file(filename, verbose=False):
             if not line:
                 continue
             if verbose:
-                print line
+                print(line)
             contract, document = parse_contract_and_document(line)
             if not contract:
                 raise Exception('ERROR: Could not parse a contract on this '
                                 'line: %r', line)
             if verbose:
-                print '-> %s%s/%s\n' % (contract_url, contract, document or '')
+                print('-> %s%s/%s\n' % (contract_url, contract, document or ''))
             yield contract, document
 
 
@@ -70,7 +70,7 @@ def resolve_contracts_to_documents(contracts_and_documents, errors, document_pat
             document_filename = '%s%s/%s' % (document_path, contract, document)
             if not os.path.exists(document_filename):
                 err = 'No file %s' % document_filename
-                print 'ERROR: ', err
+                print('ERROR: ', err)
                 errors.append(err)
             documents.append((contract, document))
             continue
@@ -79,7 +79,7 @@ def resolve_contracts_to_documents(contracts_and_documents, errors, document_pat
             docs = os.listdir(doc_dir)
             if not docs:
                 err = 'No documents for contract: %s' % doc_dir
-                print 'ERROR: ', err
+                print('ERROR: ', err)
                 errors.append(err)
             for document in docs:
                 document_filename = '%s%s/%s' % (document_path, contract,
@@ -97,24 +97,24 @@ def parse_contract_and_document(line):
     return None, None
 
 def print_document_urls(documents):
-    print '\nDocument urls (%s) (to tell Google to stop caching):' \
-        % len(documents)
+    print('\nDocument urls (%s) (to tell Google to stop caching):' \
+        % len(documents))
     for doc in documents:
-        print document_url % doc
+        print(document_url % doc)
 
 def delete_documents(documents, errors, document_path, write=False):
-    print '\nDeleting %s documents' % len(documents) \
+    print('\nDeleting %s documents' % len(documents) \
         + (' (not really) ' if not write else '') + \
-        ':'
+        ':')
     for doc in documents:
         document_filename = '%s%s/%s' % (document_path, doc[0], doc[1])
-        print document_filename
+        print(document_filename)
         if write:
             try:
                 os.remove(document_filename)
-            except OSError, e:
+            except OSError as e:
                 err = 'Could not delete %s: %s' % (document_filename, e)
-                print 'ERROR: ', err
+                print('ERROR: ', err)
                 errors.append(err)
 
 # from flask import Flask
@@ -161,4 +161,4 @@ if __name__ == '__main__':
     args.func(args)
 
     if not args.write:
-        print 'Nothing done. Use --write to do it for real.'
+        print('Nothing done. Use --write to do it for real.')

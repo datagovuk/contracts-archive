@@ -19,7 +19,7 @@ try:
     #es.indices.delete_index(INDEX)
     es.indices.create_index(INDEX)
     time.sleep(5)
-    print "Created Index", INDEX
+    print("Created Index", INDEX)
     pass
 except:
     pass

@@ -9,7 +9,7 @@ from elasticsearch.exceptions import ConnectionError
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString, MatchAll
 from elasticsearch_dsl.filter import F
-import urlparse
+import urllib.parse
 import json
 import collections
 
@@ -65,7 +65,7 @@ def make_query(query, filters, page, sort_by):
 
         result = s.execute()
         return result
-    except ConnectionError, ex:
+    except ConnectionError as ex:
         return None
 
 class SearchPaginator(object):
@@ -207,9 +207,9 @@ def search():
     facets = {}
 
     facets['region'] = {'title': 'Region',
-                        'buckets': [{'key': val} for val in regions_mapping.keys()]}
+                        'buckets': [{'key': val} for val in list(regions_mapping.keys())]}
 
-    parameters = dict(request.args.items())
+    parameters = dict(list(request.args.items()))
 
     prevlink = None
     if pagination.has_prev:
@@ -272,7 +272,7 @@ def external_link(s):
     if '@' in s:
         return 'mailto:%s' % s
     else:
-        return urlparse.urljoin('http://', s)
+        return urllib.parse.urljoin('http://', s)
 
 @app.template_filter('sort_bucket')
 def sort_bucket(bucket):
