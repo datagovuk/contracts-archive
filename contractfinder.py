@@ -286,12 +286,7 @@ def sort_bucket(bucket):
 
     https://stackoverflow.com/questions/30135448/elasticsearch-terms-aggregation-order-case-insensitive
     """
-    def case_insensitive_cmp(x, y):
-        return cmp(
-            x['key'].lower().strip(),
-            y['key'].lower().strip()
-        )
-    return sorted(bucket, cmp=case_insensitive_cmp)
+    return sorted(bucket, key=lambda x: x['key'].lower())
 
 if __name__ == '__main__':
     app.debug = False
