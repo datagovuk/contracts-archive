@@ -247,7 +247,7 @@ def download(notice_id, file_id):
                                file_id,
                                mimetype=mimetype,
                                as_attachment=True,
-                               attachment_filename=filename)
+                               download_name=filename)
 
 @app.route('/data-feeds/')
 def data_feeds():
