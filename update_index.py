@@ -2,6 +2,7 @@ from flask import Flask
 from models import db, Notice
 import time
 import os
+from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
 app.config.from_envvar('SETTINGS')
@@ -11,13 +12,11 @@ db.init_app(app)
 
 INDEX = app.config['INDEX']
 
-import pyes
-
-es = pyes.ES('127.0.0.1:9200')
+es = Elasticsearch()
 
 try:
-    #es.indices.delete_index(INDEX)
-    es.indices.create_index(INDEX)
+    es.indices.delete(index=INDEX)
+    es.indices.create(index=INDEX)
     time.sleep(5)
     print("Created Index", INDEX)
     pass
@@ -26,39 +25,39 @@ except:
 
 mapping = {
     'location_name': {
-        'type': 'string',
+        'type': 'text',
         'fields': {
             'raw' : {
-                'type': 'string',
-                'index': 'not_analyzed'
+                'type': 'text',
+                'index': 'false'
             }
         }
     },
     'location_path': {
-        'type': 'string',
-        'index': 'not_analyzed',
+        'type': 'text',
+        'index': 'false',
         'fields': {
             'tree': {
-                'type': 'string',
+                'type': 'text',
                 'analyzer': 'paths'
             }
         }
     },
     'buying_org': {
-        'type': 'string',
+        'type': 'text',
         'fields': {
             'raw' : {
-                'type': 'string',
-                'index': 'not_analyzed'
+                'type': 'text',
+                'index': 'false'
             }
         }
     },
     'business_name': {
-        'type': 'string',
+        'type': 'text',
         'fields': {
-            'raw' : {
-                'type': 'string',
-                'index': 'not_analyzed'
+            'raw': {
+                'type': 'text',
+                'index': 'false'
             }
         }
     },
@@ -74,21 +73,22 @@ settings = {
     }
 }
 
-es.indices.close_index(INDEX)
-es.indices.update_settings(INDEX, settings)
-es.indices.open_index(INDEX)
+es.indices.close(index=INDEX)
+es.indices.put_settings(index=INDEX, body=settings)
+es.indices.open(index=INDEX)
 
-es.indices.put_mapping('notices', {'properties': mapping}, [INDEX])
+es.indices.put_mapping(include_type_name=True, doc_type='notices', body={'properties': mapping}, index=INDEX)
 
 with app.app_context():
     for notice in Notice.query.all():
         document = {}
+        details = notice.details
         document['id'] = notice.id
         document['ref_no'] = notice.ref_no
-        document['title'] = notice.details.title
-        document['description'] = notice.details.description
-        document['buying_org'] = notice.details.buying_org
-        document['contact_address'] = notice.details.contact_address
+        document['title'] = details.title
+        document['description'] = details.description
+        document['buying_org'] = details.buying_org
+        document['contact_address'] = details.contact_address
         document['min_value'] = notice.min_value
         document['max_value'] = notice.max_value
         if notice.location:
@@ -111,4 +111,6 @@ with app.app_context():
             document['date_created'] = notice.date_created.strftime('%Y-%m-%d')
         if notice.deadline_date:
             document['deadline_date'] = notice.deadline_date.strftime('%Y-%m-%d')
-        es.index(document, INDEX, 'notices', notice.id)
+
+        print("Adding notice: " + details.title)
+        es.index(document=document, index=INDEX, doc_type='notices', id=notice.id)
