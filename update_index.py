@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 app = Flask(__name__)
 app.config.from_envvar('SETTINGS')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path + app.instance_path, 'app.db')
 
 db.init_app(app)
 

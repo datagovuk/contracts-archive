@@ -18,7 +18,7 @@ from regions import regions_mapping
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_envvar('SETTINGS')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path + app.instance_path, 'app.db')
 db.init_app(app)
 
 def escape_query(query):
@@ -239,7 +239,7 @@ def download(notice_id, file_id):
 
     download_file = NoticeDocument.query.filter_by(file_id=file_id).first_or_404()
     
-    directory = os.path.abspath(os.path.join(app.instance_path, 'documents', notice_id))
+    directory = os.path.abspath(os.path.join(app.root_path + app.instance_path, 'documents', notice_id))
     filename = download_file.filename.encode('latin1', 'ignore')
     mimetype = download_file.mimetype
 
