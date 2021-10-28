@@ -114,7 +114,7 @@
 <h2>Description of the contract</h2>
 <p>{{contract.details.description|d('No description was provided', True)|safe}}</p>
 
-{% if contract.documents.count() > 0 %}
+{% if contract.documents|length > 0 %}
 <h2>Documents</h2>
 <div class="ui list">
     {% for doc in contract.documents %}
