@@ -8,7 +8,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString, MatchAll
-from elasticsearch_dsl.filter import F
+from elasticsearch_dsl import Q
 import urllib.parse
 import json
 import collections
@@ -43,7 +43,7 @@ DEFAULT_SORT_BY = 'pub_date_desc'
 def make_query(query, filters, page, sort_by):
     try:
         client = Elasticsearch()
-        s = Search(client, index=app.config['INDEX'])
+        s = Search(using=client, index=app.config['INDEX'])
 
         if query:
             s = s.query(QueryString(query=escape_query(query)))
@@ -76,7 +76,7 @@ class SearchPaginator(object):
         self.page = page
 
         if result:
-            self.total_records = result.hits.total
+            self.total_records = result.hits.total["value"]
 
             for notice in result:
                 self.contracts.append(Notice.query.get(notice['id']))
@@ -135,27 +135,27 @@ def search():
 
     buying_org = request.args.get('buying_org')
     if buying_org:
-        filters.append(F('term', **{'buying_org.raw': buying_org}))
+        filters.append(Q('term', **{'buying_org.raw': buying_org}))
 
     business_name = request.args.get('business_name')
     if business_name:
-        filters.append(F('term', **{'business_name.raw': business_name}))
+        filters.append(Q('term', **{'business_name.raw': business_name}))
 
     region = request.args.get('region')
     if region:
-        filters.append(F('term', **{'location_path.tree': regions_mapping[region]}))
+        filters.append(Q('term', **{'location_path.tree': regions_mapping[region]}))
 
     try:
         min_value = request.args.get('min_value')
         if min_value != '' and min_value is not None:
-            filters.append(F('range', min_value={'gte': float(min_value)}))
+            filters.append(Q('range', min_value={'gte': float(min_value)}))
     except ValueError:
         errors.append('Error: parsing Minimum Contract Value')
 
     try:
         max_value = request.args.get('max_value')
         if max_value != '' and max_value is not None:
-            filters.append(F('range', max_value={'lte': float(max_value)}))
+            filters.append(Q('range', max_value={'lte': float(max_value)}))
     except ValueError:
         errors.append('Error: parsing Maximum Contract Value')
 
@@ -170,7 +170,7 @@ def search():
         date_created_range['lte'] = date_created_max
 
     if date_created_range:
-        filters.append(F('range', date_created=date_created_range))
+        filters.append(Q('range', date_created=date_created_range))
 
     # Deadline Date
     deadline_date_range = {}
@@ -183,7 +183,7 @@ def search():
         deadline_date_range['lte'] = deadline_date_max
 
     if deadline_date_range:
-        filters.append(F('range', deadline_date=deadline_date_range))
+        filters.append(Q('range', deadline_date=deadline_date_range))
 
     # Date Awarded
     date_awarded_range = {}
@@ -196,7 +196,7 @@ def search():
         date_awarded_range['lte'] = date_awarded_max
 
     if date_awarded_range:
-        filters.append(F('range', date_awarded=date_awarded_range))
+        filters.append(Q('range', date_awarded=date_awarded_range))
 
 
     result = make_query(query, filters, page, sort_by)
