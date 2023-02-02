@@ -3,7 +3,7 @@ Flask-SQLAlchemy==2.0
 Jinja2==2.7.3
 MarkupSafe==0.23
 SQLAlchemy==1.0.4
-Werkzeug==0.10.4
+Werkzeug==0.15.5
 argparse==1.2.1
 elasticsearch==1.7.0
 elasticsearch_dsl==0.0.8
